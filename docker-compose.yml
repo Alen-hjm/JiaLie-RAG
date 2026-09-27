@@ -1,0 +1,41 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: minglie
+      POSTGRES_PASSWORD: minglie
+      POSTGRES_DB: minglie
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U minglie"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./backend
+    env_file: .env
+    # environment 的优先级高于 env_file：这样根 .env 可以固定写 SQLite
+    # 供本机开发使用，容器里再切回 Postgres + 共享卷，两套配置互不打架。
+    environment:
+      DATABASE_URL: postgresql+psycopg://minglie:minglie@postgres:5432/minglie
+      UPLOAD_DIR: /data/uploads
+    volumes:
+      - resume_data:/data/uploads
+    ports:
+      - "8010:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  resume_data:

@@ -1,0 +1,35 @@
+# 构建上下文只保留运行需要的源码，避免把本机密钥和开发数据打进镜像。
+#
+# 特别注意 .env* ：backend/.env 里存着真实 API Key，而 Dockerfile 用的是
+# `COPY . .`，没有这个文件它会被永久烘焙进镜像层。
+.env
+.env.*
+!.env.example
+
+# Python 运行时产物
+.venv/
+venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.pytest_tmp/
+.mypy_cache/
+.ruff_cache/
+
+# 本机数据：数据库、上传的简历原文、日志
+*.db
+*.sqlite
+*.sqlite3
+uploads/
+*.log
+
+# 评测与重建过程的中间产物（可重跑，不必进镜像）
+eval/results*.json
+eval/reindex_failed.json
+
+# 编辑器 / 系统垃圾
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

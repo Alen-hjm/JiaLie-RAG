@@ -1,0 +1,21 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+sqlalchemy==2.0.36
+alembic==1.14.0
+psycopg[binary]==3.2.3
+pgvector==0.3.6
+pydantic-settings==2.7.1
+python-multipart==0.0.20
+python-docx==1.1.2
+pypdf==5.1.0
+openai==1.59.7
+# 仅用于 ORCHESTRATION_MODE=langgraph 的检索编排（StateGraph + 条件边）。
+# 未安装时会自动退回固定流水线，不会让检索失败。
+langgraph==1.2.11
+pwdlib[argon2,bcrypt]==0.2.1
+python-jose[cryptography]==3.3.0
+email-validator==2.2.0
+httpx==0.28.1
+pytest==8.3.4
+pytest-asyncio==0.25.0
+
