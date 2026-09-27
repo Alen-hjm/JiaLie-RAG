@@ -2,16 +2,18 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 import time
 
-from sqlalchemy import delete, or_, select
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.orm import Session, selectinload
 
 from ..config import RERANK_MODES, get_settings
 from ..models import CandidateProfile, JobRequirement, MatchResult, ResumeChunk
 from ..schemas import CandidateExtract, JobRequirements, MatchExplanation
 from .llm import ModelService, evidence_explanation
+from .privacy import mask_pii
+from .synonyms import expand_terms
 from .vectors import cosine
 
-__all__ = ["cosine", "overlap", "structured_score", "keyword_rerank", "search_job", "RECALL_LIMIT"]
+__all__ = ["cosine", "overlap", "structured_score", "keyword_rerank", "search_job", "empty_result_hint", "RECALL_LIMIT"]
 
 # How many chunks each recall lane contributes before fusion.
 RECALL_LIMIT = 100
@@ -22,6 +24,17 @@ RRF_K = 60
 
 # How many evidence quotes a candidate card carries.
 EVIDENCE_LIMIT = 3
+
+
+def _clip(text: str, limit: int, mask: bool) -> str:
+    """截断 + 可选脱敏。任何对外的简历引用都必须走这里。"""
+    clipped = text[:limit]
+    return mask_pii(clipped) if mask else clipped
+
+
+def _mask(text: str, mask: bool) -> str:
+    """整段文本的可选脱敏（用于送模型的上下文，不截断）。"""
+    return mask_pii(text) if mask else text
 
 # Fusion strategies:
 #   "hybrid"      -> RRF over [vector lane, keyword lane] (default)
@@ -61,8 +74,17 @@ def keyword_rerank(job: JobRequirements, candidate: CandidateProfile, evidence: 
 # 召回层：两路召回 + RRF 融合
 # ---------------------------------------------------------------------------
 
-def _query_terms(job: JobRequirements) -> list[str]:
-    """Keywords used by the lexical lane (exact matches an embedding can miss)."""
+def _query_terms(job: JobRequirements, expand: bool = True) -> list[str]:
+    """Keywords used by the lexical lane (exact matches an embedding can miss).
+
+    ``expand`` 打开时会把 JD 原词按别名词典双向扩展（services/synonyms.py）。
+    扩展发生在截断**之后**：先保证 JD 里说过的词都在，再拿别名去补召回，
+    免得词表把原词挤出 24 个名额。
+
+    注意扩展只影响"能不能被捞出来"，不参与打分——``keyword_rerank`` 与
+    ``structured_score`` 仍按 JD 原词计算，所以词表里的噪声最多让候选人进入
+    候选池，不会把他排到不该有的位置。
+    """
     seen: set[str] = set()
     terms: list[str] = []
     candidates = [job.title, *job.industries, *job.locations, *job.skills, *job.must_have, *job.preferred]
@@ -73,7 +95,8 @@ def _query_terms(job: JobRequirements) -> list[str]:
             continue
         seen.add(term)
         terms.append(term)
-    return terms[:24]
+    base = terms[:24]
+    return expand_terms(base) if expand else base
 
 
 def _vector_lane(db: Session, query_vector: list[float], limit: int) -> list[str]:
@@ -141,7 +164,7 @@ def _recall(db: Session, query_vector: list[float], terms: list[str], fusion: st
 # 排序层：对外分数契约保持不变（0.35 结构化 / 0.45 语义 / 0.20 证据覆盖）
 # ---------------------------------------------------------------------------
 
-def _pad_evidence(db: Session, candidate_id: str, already: set[str], quote_chars: int = 360) -> list[dict]:
+def _pad_evidence(db: Session, candidate_id: str, already: set[str], quote_chars: int = 360, mask: bool = True) -> list[dict]:
     """Top up a shortlisted candidate's evidence with their remaining chunks.
 
     Recall only returns the chunks that matched, so a strong candidate can end
@@ -160,7 +183,7 @@ def _pad_evidence(db: Session, candidate_id: str, already: set[str], quote_chars
         .limit(room)
     ).scalars()
     return [
-        {"chunk_id": chunk.id, "section": chunk.section, "page_number": chunk.page_number, "quote": chunk.content[:quote_chars]}
+        {"chunk_id": chunk.id, "section": chunk.section, "page_number": chunk.page_number, "quote": _clip(chunk.content, quote_chars, mask)}
         for chunk in rows
     ]
 
@@ -204,6 +227,59 @@ def resolve_rerank_mode(settings, requested: str | None) -> str:
     return mode
 
 
+def empty_result_hint(db: Session, requirements: JobRequirements) -> str:
+    """检索无结果时给一句「为什么 + 怎么办」，而不是留一片空白。
+
+    空结果是产品里最容易被忽略的状态：用户看到空列表，第一反应是"系统不行"，
+    但实际上多半是某一条硬性条件把候选人全筛掉了——只要知道是哪一条，放宽它就行。
+
+    刻意只做诊断、不改检索行为：返回空结果是诚实的，这里补充的是**解释**，
+    而不是把不合适的人塞进结果里凑数。
+    """
+    total = db.scalar(select(func.count()).select_from(CandidateProfile)) or 0
+    if total == 0:
+        return "简历库中还没有候选人，请先上传简历（支持 PDF / DOCX）后再检索。"
+
+    blockers: list[str] = []
+
+    if requirements.locations:
+        hit = db.scalar(
+            select(func.count()).select_from(CandidateProfile).where(
+                or_(*[CandidateProfile.location.ilike(f"%{loc}%") for loc in requirements.locations])
+            )
+        ) or 0
+        if hit == 0:
+            blockers.append(f"没有候选人的所在地符合「{'/'.join(requirements.locations)}」")
+
+    if requirements.minimum_years:
+        hit = db.scalar(
+            select(func.count()).select_from(CandidateProfile)
+            .where(CandidateProfile.years_experience >= requirements.minimum_years)
+        ) or 0
+        if hit == 0:
+            # minimum_years 是浮点数，直接插值会显示成「99.0 年」——对用户只是噪音。
+            min_years = requirements.minimum_years
+            years_text = f"{min_years:g}" if isinstance(min_years, float) else str(min_years)
+            blockers.append(f"没有候选人的工作年限达到 {years_text} 年")
+
+    if requirements.management_required:
+        hit = db.scalar(
+            select(func.count()).select_from(CandidateProfile)
+            .where(CandidateProfile.management_experience.is_(True))
+        ) or 0
+        if hit == 0:
+            blockers.append("没有候选人具备团队管理经验")
+
+    if blockers:
+        return "没有找到匹配的候选人，原因可能是：" + "；".join(blockers) + "。放宽其中任意一项都能扩大范围。"
+
+    return (
+        f"简历库里有 {total} 位候选人，但没有一位同时满足全部条件。"
+        "建议减少硬性要求，或把行业词换成更通用的说法"
+        "（例如用「半导体」代替具体的产品线名称）。"
+    )
+
+
 def search_job(
     db: Session,
     job: JobRequirement,
@@ -230,6 +306,7 @@ def search_job(
 
     settings = get_settings()
     mode = resolve_rerank_mode(settings, rerank)
+    mask = settings.mask_pii
 
     # raw_text / requirements_override let the orchestration graph retry with a
     # rewritten query while still persisting results under the real job.
@@ -237,7 +314,7 @@ def search_job(
     query_text = (raw_text or job.raw_text or "").strip() or job.raw_text
     service = ModelService(db)
     query_vector = service.embed([query_text])[0]
-    terms = _query_terms(requirements)
+    terms = _query_terms(requirements, settings.synonym_expansion)
 
     recalled_ids = _recall(db, query_vector, terms, fusion)
     if not recalled_ids:
@@ -274,9 +351,11 @@ def search_job(
             "structured": structured_score(requirements, candidate),
             "semantic": semantic,
             "rerank": keyword_rerank(requirements, candidate, best_chunk.content),
-            "evidence": [{"chunk_id": chunk.id, "section": chunk.section, "page_number": chunk.page_number, "quote": chunk.content[:360]} for chunk, _ in candidate_chunks[:EVIDENCE_LIMIT]],
-            "explain_chunks": [chunk.content for chunk, _ in candidate_chunks[:EVIDENCE_LIMIT]],
-            "evidence_text": " ".join(chunk.content for chunk, _ in candidate_chunks[:2]),
+            # 对外的简历引用统一走 _clip / _mask：截断 + 脱敏（手机号 / 邮箱 / 身份证）。
+            # explain_chunks 与 evidence_text 会被送进大模型，同样必须先脱敏。
+            "evidence": [{"chunk_id": chunk.id, "section": chunk.section, "page_number": chunk.page_number, "quote": _clip(chunk.content, 360, mask)} for chunk, _ in candidate_chunks[:EVIDENCE_LIMIT]],
+            "explain_chunks": [_mask(chunk.content, mask) for chunk, _ in candidate_chunks[:EVIDENCE_LIMIT]],
+            "evidence_text": " ".join(_mask(chunk.content, mask) for chunk, _ in candidate_chunks[:2]),
         })
 
     def weighted(row: dict) -> float:
@@ -306,7 +385,7 @@ def search_job(
     for row in rows[:limit]:
         if len(row["evidence"]) >= EVIDENCE_LIMIT:
             continue
-        row["evidence"] += _pad_evidence(db, row["candidate"].id, {item["chunk_id"] for item in row["evidence"]})
+        row["evidence"] += _pad_evidence(db, row["candidate"].id, {item["chunk_id"] for item in row["evidence"]}, mask=mask)
         row["explain_chunks"] = [item["quote"] for item in row["evidence"]]
 
     db.execute(delete(MatchResult).where(MatchResult.job_id == job.id))

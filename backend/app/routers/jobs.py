@@ -4,9 +4,9 @@ from sqlalchemy.orm import Session
 from ..db import get_db
 from ..dependencies import current_user
 from ..models import Conversation, JobRequirement, MatchResult
-from ..schemas import JobCreateIn, JobParseIn, JobUpdateIn, SearchOptions
+from ..schemas import JobCreateIn, JobParseIn, JobRequirements, JobUpdateIn, SearchOptions
 from ..services.llm import ModelService
-from ..services.search import search_job
+from ..services.search import empty_result_hint, search_job
 
 router = APIRouter(prefix="/api", tags=["jobs"], dependencies=[Depends(current_user)])
 
@@ -89,7 +89,16 @@ def run_search(job_id: str, payload: SearchOptions = SearchOptions(), db: Sessio
     if not job:
         raise HTTPException(404, detail={"code": "JOB_NOT_FOUND", "message": "岗位不存在"})
     results = search_job(db, job, payload.limit)
-    return {"job": {"id": job.id, "title": job.title, "requirements": job.requirements_json}, "items": [match_dict(m) for m in results], "total": len(results)}
+    payload_out = {
+        "job": {"id": job.id, "title": job.title, "requirements": job.requirements_json},
+        "items": [match_dict(m) for m in results],
+        "total": len(results),
+    }
+    # 空结果最容易被当成"系统不行"。补一句可操作的原因（hint 是可选字段，
+    # 老调用方忽略它即可，不影响既有契约）。
+    if not results:
+        payload_out["hint"] = empty_result_hint(db, JobRequirements.model_validate(job.requirements_json))
+    return payload_out
 
 
 @router.get("/jobs/{job_id}/matches")

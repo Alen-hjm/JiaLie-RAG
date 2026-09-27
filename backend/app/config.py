@@ -79,6 +79,15 @@ class Settings(BaseSettings):
     # 而用户实际细看的只有前几名——这是花在刀刃上的取舍。
     explain_top_n: int = 8
 
+    # ---------- 召回增强与隐私（都可开关，便于做对照实验） ----------
+    # 同义词扩展：把 JD 里的行业词 / 职位词按别名词典双向扩展后，再走关键词召回。
+    # 默认开启；关掉它就能量化"这份词表究竟帮了多少"（见 scripts/evaluate.py 的
+    # --baseline 对比），而不是凭感觉说"加了同义词应该更好"。
+    synonym_expansion: bool = True
+    # 输出侧 PII 脱敏：证据引用、送模型的文本里，手机号 / 邮箱 / 身份证打码。
+    # 只作用于"往外送"的边界，不动入库原文（见 services/privacy.py 的说明）。
+    mask_pii: bool = True
+
     # ---------- legacy aliases (kept so existing .env files keep working) ----------
     openai_api_key: str = ""
     openai_base_url: str = "https://api.openai.com/v1"

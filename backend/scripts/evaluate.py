@@ -14,6 +14,9 @@ before scoring." —— 指标函数写好了，但从来没有真正跑出过�
   B. 向量后端对比（需重建索引，见 scripts/reindex_embeddings.py）
        先配 hash 并 reindex --force  ->  --out eval/results_embed_hash.json
        再配真实 provider 并 reindex --force  ->  --out eval/results_embed_real.json
+  C. 功能开关对比（语料不变，只看某个改动带来了多少涨跌）
+       python -m scripts.evaluate --out eval/before.json        # 关掉同义词扩展（SYNONYM_EXPANSION=false）
+       python -m scripts.evaluate --out eval/after.json --baseline eval/before.json
 
 用法示例：
     cd backend
@@ -68,6 +71,48 @@ def reciprocal_rank(ranked_ids: list[str], relevant_ids: set[str]) -> float:
     return 0.0
 
 
+def precision_at_k(ranked_ids: list[str], relevant_ids: set[str], k: int) -> float:
+    """前 k 位里有多少比例是相关的。
+
+    分母用**实际返回条数**而不是 k：小语料下候选池常常不足 k 人，按 k 作分母
+    会把分数系统性压低，不同配置之间就失去了可比性。返回空窗口时记 1.0，
+    与 ``recall_at_k`` 的空集约定保持一致（没有输出就没有错输出）。
+    """
+    window = ranked_ids[:k]
+    if not window:
+        return 1.0
+    return len(set(window) & relevant_ids) / len(window)
+
+
+# ---------------------------------------------------------------------------
+# 基线对比：让"改了之后到底变好没有"变成一个可以一眼看出的数字
+# ---------------------------------------------------------------------------
+
+def load_baseline(path: Path) -> dict[str, float] | None:
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+    aggregate = payload.get("aggregate")
+    return aggregate if isinstance(aggregate, dict) else None
+
+
+def print_baseline_diff(current: dict[str, float], baseline: dict[str, float], label: str) -> None:
+    shared = [key for key in current if key in baseline]
+    if not shared:
+        print(f"\n（基线 {label} 中没有可对比的指标——是两个不同版本的评测格式？）")
+        return
+    print(f"\n对比基线：{label}")
+    print(f"  {'指标':<18}{'基线':>9}{'本次':>9}{'变化':>11}")
+    for key in shared:
+        before, after = float(baseline[key]), float(current[key])
+        delta = after - before
+        arrow = "↑" if delta > 1e-9 else ("↓" if delta < -1e-9 else "=")
+        print(f"  {key:<18}{before:>9.4f}{after:>9.4f}{arrow}{abs(delta):>10.4f}")
+
+
 def ndcg_at_k(ranked_grades: list[int], ideal_grades: list[int], k: int) -> float:
     """NDCG with graded relevance; gain = 2^grade - 1."""
     dcg = sum((2 ** grade - 1) / math.log2(index + 2) for index, grade in enumerate(ranked_grades[:k]))
@@ -116,11 +161,20 @@ def candidate_index(db) -> tuple[dict[str, tuple[str, str]], dict[str, str]]:
     return info, by_key
 
 
-def resolve_entry(raw_key: str, by_key: dict[str, str]) -> str | None:
-    """Look a gold entry up by sha256 key, explicit name key, or bare name."""
+def resolve_entry(raw_key: str, by_key: dict[str, str], label: str | None = None) -> str | None:
+    """Look a gold entry up by sha256 key, explicit name key, or bare name.
+
+    最后一层是**按 label（姓名）兜底**：sha256 算的是文档字节，而 python-docx 会把
+    创建时间写进 docx 的 core properties——同一份简历重新生成一次，内容一字未改、
+    哈希却会变。以前这种情况会让整条黄金样例直接作废，指标悄悄失真（实测 15 位
+    候选人有 8 位因此对不上，5 个 case 的 MRR 被压成 0）。姓名兜底把"数据重建"
+    与"评测是否可信"解耦，代价只是重名时会取到第一个同名人。
+    """
     candidate_id = by_key.get(raw_key)
     if candidate_id is None and not raw_key.startswith(("sha256:", "name:")):
         candidate_id = by_key.get(f"name:{raw_key}")
+    if candidate_id is None and label:
+        candidate_id = by_key.get(f"name:{label}")
     return candidate_id
 
 
@@ -146,7 +200,7 @@ def evaluate(gold_path: Path, fusion: str, ks: tuple[int, ...], limit: int, keep
             missing: list[str] = []
             for entry in case.get("expected", []):
                 raw_key = str(entry.get("key", ""))
-                candidate_id = resolve_entry(raw_key, by_key)
+                candidate_id = resolve_entry(raw_key, by_key, entry.get("label"))
                 if candidate_id is None:
                     missing.append(str(entry.get("label") or raw_key))
                     continue
@@ -210,6 +264,7 @@ def evaluate(gold_path: Path, fusion: str, ks: tuple[int, ...], limit: int, keep
             }
             for k in ks:
                 case_result[f"recall@{k}"] = round(recall_at_k(ranked_ids, relevant_ids, k), 4)
+                case_result[f"precision@{k}"] = round(precision_at_k(ranked_ids, relevant_ids, k), 4)
                 case_result[f"ndcg@{k}"] = round(ndcg_at_k(ranked_grades, [g for _, g, _ in expected], k), 4)
             case_result["mrr"] = round(reciprocal_rank(ranked_ids, relevant_ids), 4)
             case_results.append(case_result)
@@ -225,6 +280,7 @@ def evaluate(gold_path: Path, fusion: str, ks: tuple[int, ...], limit: int, keep
     if case_results:
         for k in ks:
             aggregate[f"recall@{k}"] = round(sum(c[f"recall@{k}"] for c in case_results) / len(case_results), 4)
+            aggregate[f"precision@{k}"] = round(sum(c[f"precision@{k}"] for c in case_results) / len(case_results), 4)
             aggregate[f"ndcg@{k}"] = round(sum(c[f"ndcg@{k}"] for c in case_results) / len(case_results), 4)
         aggregate["mrr"] = round(sum(c["mrr"] for c in case_results) / len(case_results), 4)
         coverage = [c["evidence_coverage"] for c in case_results if c["evidence_coverage"] is not None]
@@ -280,6 +336,8 @@ def main() -> int:
     parser.add_argument("--top-k", type=int, nargs="+", default=list(DEFAULT_KS))
     parser.add_argument("--limit", type=int, default=50, help="每条样例最多返回多少位候选人")
     parser.add_argument("--keep", action="store_true", help="保留评测产生的岗位与匹配记录（默认清理）")
+    parser.add_argument("--baseline", type=Path, default=None,
+                        help="上一次的评测结果 JSON，用于打印指标涨跌对比")
     parser.add_argument("--list-candidates", action="store_true", help="只列出候选人标识，便于编写黄金集")
     args = parser.parse_args()
 
@@ -302,11 +360,13 @@ def main() -> int:
     print(f"向量后端：{'占位（哈希，无语义）' if config['embedding_is_placeholder'] else '真实'}"
           f"  维度 {config['embedding_dimensions']}  语料 {config['corpus']['candidates']} 人 / {config['corpus']['chunks']} chunk")
     print("=" * 78)
-    print(f"{'case_id':<40}" + "".join(f"{f'R@{k}':>8}" for k in args.top_k) + f"{'MRR':>8}" + "".join(f"{f'nDCG@{k}':>8}" for k in args.top_k))
+    print(f"{'case_id':<40}" + "".join(f"{f'R@{k}':>8}" for k in args.top_k) + f"{'MRR':>8}"
+          + "".join(f"{f'P@{k}':>8}" for k in args.top_k) + "".join(f"{f'nDCG@{k}':>8}" for k in args.top_k))
     for case in report["cases"]:
         row = f"{case['case_id']:<40}"
         row += "".join(f"{case[f'recall@{k}']:>8.2f}" for k in args.top_k)
         row += f"{case['mrr']:>8.2f}"
+        row += "".join(f"{case[f'precision@{k}']:>8.2f}" for k in args.top_k)
         row += "".join(f"{case[f'ndcg@{k}']:>8.2f}" for k in args.top_k)
         print(row)
     print("-" * 78)
@@ -314,8 +374,15 @@ def main() -> int:
     row = f"{'平均（aggregate）':<40}"
     row += "".join(f"{agg[f'recall@{k}']:>8.2f}" for k in args.top_k)
     row += f"{agg['mrr']:>8.2f}"
+    row += "".join(f"{agg[f'precision@{k}']:>8.2f}" for k in args.top_k)
     row += "".join(f"{agg[f'ndcg@{k}']:>8.2f}" for k in args.top_k)
     print(row)
+    if args.baseline:
+        baseline = load_baseline(args.baseline)
+        if baseline:
+            print_baseline_diff(report["aggregate"], baseline, args.baseline.name)
+        else:
+            print(f"\n⚠ 读不到基线文件，或格式不匹配：{args.baseline}")
     if report["unresolved_expected"]:
         print("\n⚠ 以下黄金集条目未匹配到候选人（语料重建过？用 --list-candidates 更新 key）：")
         for case_id, labels in report["unresolved_expected"].items():

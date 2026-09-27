@@ -47,8 +47,8 @@
       "jd": "招聘新能源销售经理，需要渠道管理经验，工作地点杭州或上海。",
       "expected": [
         {"key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d", "label": "陈星野", "grade": 3},
-        {"key": "sha256:85c79d9165e1bc6edddd4a78c34264e3cd23e745867c9732e2d55a69d24bebdb", "label": "汪静涛", "grade": 2},
-        {"key": "sha256:1ad37e592b7d25f9500bd766ef70ae5ee00538df7f614db779f4ed6d929ba225", "label": "罗启帆", "grade": 1}
+        {"key": "sha256:cbc5393d1070a9e6e77ec085fec35cb01a3bf4c4fdaea430f1207a81d443cc06", "label": "汪静涛", "grade": 2},
+        {"key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba", "label": "罗启帆", "grade": 1}
       ],
       "required_evidence": ["新能源", "渠道"]
     },
@@ -56,9 +56,9 @@
       "case_id": "medical-sales-manager-channel",
       "jd": "招聘医疗设备销售经理，需要渠道管理经验，工作地点南京或华东。",
       "expected": [
-        {"key": "sha256:1ad37e592b7d25f9500bd766ef70ae5ee00538df7f614db779f4ed6d929ba225", "label": "罗启帆", "grade": 3},
+        {"key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba", "label": "罗启帆", "grade": 3},
         {"key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d", "label": "陈星野", "grade": 1},
-        {"key": "sha256:30d9ec06a0e0269fbce640d5bca32eb14c93478ed6b3451b3797b3a3f12b59d0", "label": "汤文渊", "grade": 1}
+        {"key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b", "label": "汤文渊", "grade": 1}
       ],
       "required_evidence": ["医疗", "渠道"]
     },
@@ -66,9 +66,9 @@
       "case_id": "manufacturing-regional-manager",
       "jd": "招聘制造业区域经理，需要渠道管理经验，工作地点广州。",
       "expected": [
-        {"key": "sha256:30d9ec06a0e0269fbce640d5bca32eb14c93478ed6b3451b3797b3a3f12b59d0", "label": "汤文渊", "grade": 3},
-        {"key": "sha256:189b071c3636041a48de67610abd0c828136419c351676800e03d24381efe4a2", "label": "白晓宁", "grade": 2},
-        {"key": "sha256:712e1d1d3db5a58f5d05a443c0b41b9c5db3a4006a94937b2d58b2cd4f432c2e", "label": "邓嘉睿", "grade": 1}
+        {"key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b", "label": "汤文渊", "grade": 3},
+        {"key": "sha256:888ff381430da658b099d200e63ae3f1f4e9a9df966abb9ed104562d4723a821", "label": "白晓宁", "grade": 2},
+        {"key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68", "label": "邓嘉睿", "grade": 1}
       ],
       "required_evidence": ["制造业", "渠道"]
     },
@@ -76,8 +76,8 @@
       "case_id": "internet-sales-director-enterprise",
       "jd": "招聘互联网销售总监，需要团队管理经验，工作地点北京或深圳。",
       "expected": [
-        {"key": "sha256:8bd60a75e52cb3fbfb2033e9d8a99dbe29fcc214879bb32752777f3b63688f60", "label": "卢承恩", "grade": 3},
-        {"key": "sha256:bf8ef1a9520173c45798adeeab31bfa40bbca773274719751806801ded0b11ab", "label": "何佳琪", "grade": 2}
+        {"key": "sha256:39d2cc7c349414d8185d52ce87c44c83ae26a6117f39511e9521415a08f609cf", "label": "卢承恩", "grade": 3},
+        {"key": "sha256:a24b684412a36f01ef14b1f91e511c0248f6726d7309f50910715f2f0f13cc06", "label": "何佳琪", "grade": 2}
       ],
       "required_evidence": ["互联网", "团队"]
     },
@@ -85,9 +85,9 @@
       "case_id": "finance-director-manufacturing",
       "jd": "招聘制造业财务总监，负责年度预算与成本管控，工作地点杭州。",
       "expected": [
-        {"key": "sha256:712e1d1d3db5a58f5d05a443c0b41b9c5db3a4006a94937b2d58b2cd4f432c2e", "label": "邓嘉睿", "grade": 3},
-        {"key": "sha256:10f2ab61b2a727ab99462e41bf5f881c1558082514038b52555c33a1f0569f21", "label": "邱文彬", "grade": 2},
-        {"key": "sha256:30d9ec06a0e0269fbce640d5bca32eb14c93478ed6b3451b3797b3a3f12b59d0", "label": "汤文渊", "grade": 1}
+        {"key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68", "label": "邓嘉睿", "grade": 3},
+        {"key": "sha256:8634704b6cc4bb342de4d8f4be19c9429259597c6ba1c8e03aecea48f3fa9273", "label": "邱文彬", "grade": 2},
+        {"key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b", "label": "汤文渊", "grade": 1}
       ],
       "required_evidence": ["财务", "预算"]
     }

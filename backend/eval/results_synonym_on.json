@@ -1,0 +1,1799 @@
+{
+  "generated_at": "2026-09-27T14:30:07+00:00",
+  "gold_file": "gold.json",
+  "gold_version": 2,
+  "config": {
+    "database": "sqlite",
+    "fusion": "hybrid",
+    "rerank_mode": "rule",
+    "weights": {
+      "structured": 0.35,
+      "semantic": 0.45,
+      "rerank": 0.2
+    },
+    "model_mode": "deepseek",
+    "chat_model": "deepseek-chat",
+    "embedding_provider": "zhipu",
+    "embedding_model": "embedding-3",
+    "embedding_dimensions": 1024,
+    "embedding_is_placeholder": false,
+    "relevant_grade_threshold": 2,
+    "corpus": {
+      "candidates": 17,
+      "chunks": 37
+    }
+  },
+  "aggregate": {
+    "recall@5": 0.9688,
+    "precision@5": 0.45,
+    "ndcg@5": 0.9062,
+    "recall@10": 1.0,
+    "precision@10": 0.2375,
+    "ndcg@10": 0.93,
+    "mrr": 0.9375,
+    "evidence_coverage": 1.0
+  },
+  "unresolved_expected": {},
+  "cases": [
+    {
+      "case_id": "semiconductor-sales-director-east",
+      "jd": "招聘半导体销售总监，8 年以上经验，熟悉晶圆厂大客户，工作地点上海或苏州，需要团队管理经验。",
+      "expected": [
+        {
+          "key": "sha256:2b5b46a8366de405247873b5d350b579f87861a7e2a99a95052a7933e661df40",
+          "label": "林若川",
+          "grade": 3
+        },
+        {
+          "key": "sha256:218084fa32c197ea49552ef3c51ee03c335185100227b27b2dc69c1fc988d411",
+          "label": "蒋子恒",
+          "grade": 3
+        },
+        {
+          "key": "sha256:21da3ba2e17c747f7999facc12588bfa42572de928e02b6ed301e62658d26f2c",
+          "label": "苏文卿",
+          "grade": 2
+        },
+        {
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 2
+        }
+      ],
+      "unresolved": [],
+      "ranked": [
+        {
+          "rank": 1,
+          "key": "sha256:218084fa32c197ea49552ef3c51ee03c335185100227b27b2dc69c1fc988d411",
+          "label": "蒋子恒",
+          "grade": 3,
+          "total_score": 65.5,
+          "structured_score": 80.0,
+          "semantic_score": 77.0,
+          "rerank_score": 14.3,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 2,
+          "key": "sha256:2b5b46a8366de405247873b5d350b579f87861a7e2a99a95052a7933e661df40",
+          "label": "林若川",
+          "grade": 3,
+          "total_score": 65.0,
+          "structured_score": 80.0,
+          "semantic_score": 75.8,
+          "rerank_score": 14.3,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 3,
+          "key": "sha256:21da3ba2e17c747f7999facc12588bfa42572de928e02b6ed301e62658d26f2c",
+          "label": "苏文卿",
+          "grade": 2,
+          "total_score": 57.9,
+          "structured_score": 60.0,
+          "semantic_score": 75.7,
+          "rerank_score": 14.3,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 4,
+          "key": "sha256:36a9859bdc87ff5a2b0964763eac1d4f4c2df43c1dd375f25df8efa6cdf07cc4",
+          "label": "周启明",
+          "grade": 0,
+          "total_score": 54.3,
+          "structured_score": 60.0,
+          "semantic_score": 74.1,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 5,
+          "key": "sha256:8634704b6cc4bb342de4d8f4be19c9429259597c6ba1c8e03aecea48f3fa9273",
+          "label": "邱文彬",
+          "grade": 0,
+          "total_score": 51.1,
+          "structured_score": 60.0,
+          "semantic_score": 66.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 6,
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 2,
+          "total_score": 50.4,
+          "structured_score": 35.0,
+          "semantic_score": 72.2,
+          "rerank_score": 28.6,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 7,
+          "key": "sha256:39d2cc7c349414d8185d52ce87c44c83ae26a6117f39511e9521415a08f609cf",
+          "label": "卢承恩",
+          "grade": 0,
+          "total_score": 50.4,
+          "structured_score": 50.0,
+          "semantic_score": 66.8,
+          "rerank_score": 14.3,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 8,
+          "key": "sha256:1db8276fc43e26915ad86f2ab7634e30ddbed7a76c39e10d895fe9a3a02b31e1",
+          "label": "杨泽坚",
+          "grade": 0,
+          "total_score": 50.0,
+          "structured_score": 60.0,
+          "semantic_score": 64.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 9,
+          "key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba",
+          "label": "罗启帆",
+          "grade": 0,
+          "total_score": 49.2,
+          "structured_score": 50.0,
+          "semantic_score": 64.1,
+          "rerank_score": 14.3,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 10,
+          "key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d",
+          "label": "陈星野",
+          "grade": 0,
+          "total_score": 44.8,
+          "structured_score": 40.0,
+          "semantic_score": 68.4,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 11,
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 0,
+          "total_score": 42.8,
+          "structured_score": 40.0,
+          "semantic_score": 64.0,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 12,
+          "key": "sha256:cbc5393d1070a9e6e77ec085fec35cb01a3bf4c4fdaea430f1207a81d443cc06",
+          "label": "汪静涛",
+          "grade": 0,
+          "total_score": 41.8,
+          "structured_score": 32.5,
+          "semantic_score": 67.6,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 13,
+          "key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68",
+          "label": "邓嘉睿",
+          "grade": 0,
+          "total_score": 41.8,
+          "structured_score": 40.0,
+          "semantic_score": 61.7,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 14,
+          "key": "sha256:ad8c9817a7e9931b43194b08ea0b94abba1cb50e8dfa2f0e6798caa53173687a",
+          "label": "张家浩",
+          "grade": 0,
+          "total_score": 39.9,
+          "structured_score": 40.0,
+          "semantic_score": 57.6,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 15,
+          "key": "sha256:87b3c662c1255da1455a5519feb69ccd8190ab353543ee1f432e25d18e88156d",
+          "label": "郑天华",
+          "grade": 0,
+          "total_score": 37.3,
+          "structured_score": 17.5,
+          "semantic_score": 69.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 16,
+          "key": "sha256:a24b684412a36f01ef14b1f91e511c0248f6726d7309f50910715f2f0f13cc06",
+          "label": "何佳琪",
+          "grade": 0,
+          "total_score": 33.4,
+          "structured_score": 15.0,
+          "semantic_score": 62.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 17,
+          "key": "sha256:888ff381430da658b099d200e63ae3f1f4e9a9df966abb9ed104562d4723a821",
+          "label": "白晓宁",
+          "grade": 0,
+          "total_score": 32.0,
+          "structured_score": 10.0,
+          "semantic_score": 63.4,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        }
+      ],
+      "evidence_coverage": 1.0,
+      "evidence_missing": [],
+      "recall@5": 0.75,
+      "precision@5": 0.6,
+      "ndcg@5": 0.9091,
+      "recall@10": 1.0,
+      "precision@10": 0.4,
+      "ndcg@10": 0.9843,
+      "mrr": 1.0
+    },
+    {
+      "case_id": "ic-sales-manager-east",
+      "jd": "招聘集成电路销售经理，5 年以上经验，覆盖华东客户，熟悉大客户维护。",
+      "expected": [
+        {
+          "key": "sha256:36a9859bdc87ff5a2b0964763eac1d4f4c2df43c1dd375f25df8efa6cdf07cc4",
+          "label": "周启明",
+          "grade": 3
+        },
+        {
+          "key": "sha256:87b3c662c1255da1455a5519feb69ccd8190ab353543ee1f432e25d18e88156d",
+          "label": "郑天华",
+          "grade": 3
+        },
+        {
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 2
+        }
+      ],
+      "unresolved": [],
+      "ranked": [
+        {
+          "rank": 1,
+          "key": "sha256:87b3c662c1255da1455a5519feb69ccd8190ab353543ee1f432e25d18e88156d",
+          "label": "郑天华",
+          "grade": 3,
+          "total_score": 53.8,
+          "structured_score": 50.0,
+          "semantic_score": 73.2,
+          "rerank_score": 16.7,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 2,
+          "key": "sha256:36a9859bdc87ff5a2b0964763eac1d4f4c2df43c1dd375f25df8efa6cdf07cc4",
+          "label": "周启明",
+          "grade": 3,
+          "total_score": 53.7,
+          "structured_score": 50.0,
+          "semantic_score": 72.9,
+          "rerank_score": 16.7,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 3,
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 2,
+          "total_score": 44.3,
+          "structured_score": 25.0,
+          "semantic_score": 71.5,
+          "rerank_score": 16.7,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 4,
+          "key": "sha256:21da3ba2e17c747f7999facc12588bfa42572de928e02b6ed301e62658d26f2c",
+          "label": "苏文卿",
+          "grade": 0,
+          "total_score": 41.6,
+          "structured_score": 25.0,
+          "semantic_score": 73.0,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 5,
+          "key": "sha256:2b5b46a8366de405247873b5d350b579f87861a7e2a99a95052a7933e661df40",
+          "label": "林若川",
+          "grade": 0,
+          "total_score": 41.5,
+          "structured_score": 25.0,
+          "semantic_score": 72.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 6,
+          "key": "sha256:218084fa32c197ea49552ef3c51ee03c335185100227b27b2dc69c1fc988d411",
+          "label": "蒋子恒",
+          "grade": 0,
+          "total_score": 41.3,
+          "structured_score": 25.0,
+          "semantic_score": 72.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 7,
+          "key": "sha256:cbc5393d1070a9e6e77ec085fec35cb01a3bf4c4fdaea430f1207a81d443cc06",
+          "label": "汪静涛",
+          "grade": 0,
+          "total_score": 39.5,
+          "structured_score": 25.0,
+          "semantic_score": 68.2,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 8,
+          "key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d",
+          "label": "陈星野",
+          "grade": 0,
+          "total_score": 39.4,
+          "structured_score": 25.0,
+          "semantic_score": 68.2,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 9,
+          "key": "sha256:8634704b6cc4bb342de4d8f4be19c9429259597c6ba1c8e03aecea48f3fa9273",
+          "label": "邱文彬",
+          "grade": 0,
+          "total_score": 38.9,
+          "structured_score": 25.0,
+          "semantic_score": 67.1,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 10,
+          "key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba",
+          "label": "罗启帆",
+          "grade": 0,
+          "total_score": 38.8,
+          "structured_score": 25.0,
+          "semantic_score": 66.7,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 11,
+          "key": "sha256:39d2cc7c349414d8185d52ce87c44c83ae26a6117f39511e9521415a08f609cf",
+          "label": "卢承恩",
+          "grade": 0,
+          "total_score": 38.4,
+          "structured_score": 25.0,
+          "semantic_score": 65.9,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 12,
+          "key": "sha256:a24b684412a36f01ef14b1f91e511c0248f6726d7309f50910715f2f0f13cc06",
+          "label": "何佳琪",
+          "grade": 0,
+          "total_score": 38.3,
+          "structured_score": 25.0,
+          "semantic_score": 65.6,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 13,
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 0,
+          "total_score": 38.0,
+          "structured_score": 25.0,
+          "semantic_score": 65.0,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 14,
+          "key": "sha256:1db8276fc43e26915ad86f2ab7634e30ddbed7a76c39e10d895fe9a3a02b31e1",
+          "label": "杨泽坚",
+          "grade": 0,
+          "total_score": 37.4,
+          "structured_score": 25.0,
+          "semantic_score": 63.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 15,
+          "key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68",
+          "label": "邓嘉睿",
+          "grade": 0,
+          "total_score": 36.3,
+          "structured_score": 25.0,
+          "semantic_score": 61.2,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 16,
+          "key": "sha256:888ff381430da658b099d200e63ae3f1f4e9a9df966abb9ed104562d4723a821",
+          "label": "白晓宁",
+          "grade": 0,
+          "total_score": 35.3,
+          "structured_score": 20.0,
+          "semantic_score": 62.9,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 17,
+          "key": "sha256:ad8c9817a7e9931b43194b08ea0b94abba1cb50e8dfa2f0e6798caa53173687a",
+          "label": "张家浩",
+          "grade": 0,
+          "total_score": 35.0,
+          "structured_score": 25.0,
+          "semantic_score": 58.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        }
+      ],
+      "evidence_coverage": 1.0,
+      "evidence_missing": [],
+      "recall@5": 1.0,
+      "precision@5": 0.6,
+      "ndcg@5": 1.0,
+      "recall@10": 1.0,
+      "precision@10": 0.3,
+      "ndcg@10": 1.0,
+      "mrr": 1.0
+    },
+    {
+      "case_id": "semiconductor-key-account-english",
+      "jd": "招聘半导体大客户经理，负责晶圆厂客户开发，需要英语沟通能力。",
+      "expected": [
+        {
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 3
+        },
+        {
+          "key": "sha256:87b3c662c1255da1455a5519feb69ccd8190ab353543ee1f432e25d18e88156d",
+          "label": "郑天华",
+          "grade": 2
+        },
+        {
+          "key": "sha256:21da3ba2e17c747f7999facc12588bfa42572de928e02b6ed301e62658d26f2c",
+          "label": "苏文卿",
+          "grade": 2
+        }
+      ],
+      "unresolved": [],
+      "ranked": [
+        {
+          "rank": 1,
+          "key": "sha256:2b5b46a8366de405247873b5d350b579f87861a7e2a99a95052a7933e661df40",
+          "label": "林若川",
+          "grade": 0,
+          "total_score": 56.2,
+          "structured_score": 50.0,
+          "semantic_score": 71.1,
+          "rerank_score": 33.3,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 2,
+          "key": "sha256:21da3ba2e17c747f7999facc12588bfa42572de928e02b6ed301e62658d26f2c",
+          "label": "苏文卿",
+          "grade": 2,
+          "total_score": 54.1,
+          "structured_score": 50.0,
+          "semantic_score": 73.9,
+          "rerank_score": 16.7,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 3,
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 3,
+          "total_score": 53.7,
+          "structured_score": 50.0,
+          "semantic_score": 73.1,
+          "rerank_score": 16.7,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 4,
+          "key": "sha256:218084fa32c197ea49552ef3c51ee03c335185100227b27b2dc69c1fc988d411",
+          "label": "蒋子恒",
+          "grade": 0,
+          "total_score": 52.8,
+          "structured_score": 50.0,
+          "semantic_score": 71.1,
+          "rerank_score": 16.7,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 5,
+          "key": "sha256:87b3c662c1255da1455a5519feb69ccd8190ab353543ee1f432e25d18e88156d",
+          "label": "郑天华",
+          "grade": 2,
+          "total_score": 35.4,
+          "structured_score": 0.0,
+          "semantic_score": 71.3,
+          "rerank_score": 16.7,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 6,
+          "key": "sha256:36a9859bdc87ff5a2b0964763eac1d4f4c2df43c1dd375f25df8efa6cdf07cc4",
+          "label": "周启明",
+          "grade": 0,
+          "total_score": 31.4,
+          "structured_score": 0.0,
+          "semantic_score": 69.7,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 7,
+          "key": "sha256:8634704b6cc4bb342de4d8f4be19c9429259597c6ba1c8e03aecea48f3fa9273",
+          "label": "邱文彬",
+          "grade": 0,
+          "total_score": 30.3,
+          "structured_score": 0.0,
+          "semantic_score": 67.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 8,
+          "key": "sha256:a24b684412a36f01ef14b1f91e511c0248f6726d7309f50910715f2f0f13cc06",
+          "label": "何佳琪",
+          "grade": 0,
+          "total_score": 29.8,
+          "structured_score": 0.0,
+          "semantic_score": 66.2,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 9,
+          "key": "sha256:cbc5393d1070a9e6e77ec085fec35cb01a3bf4c4fdaea430f1207a81d443cc06",
+          "label": "汪静涛",
+          "grade": 0,
+          "total_score": 29.7,
+          "structured_score": 0.0,
+          "semantic_score": 65.9,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 10,
+          "key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d",
+          "label": "陈星野",
+          "grade": 0,
+          "total_score": 29.3,
+          "structured_score": 0.0,
+          "semantic_score": 65.1,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 11,
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 0,
+          "total_score": 29.2,
+          "structured_score": 0.0,
+          "semantic_score": 64.9,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 12,
+          "key": "sha256:888ff381430da658b099d200e63ae3f1f4e9a9df966abb9ed104562d4723a821",
+          "label": "白晓宁",
+          "grade": 0,
+          "total_score": 29.1,
+          "structured_score": 0.0,
+          "semantic_score": 64.7,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 13,
+          "key": "sha256:39d2cc7c349414d8185d52ce87c44c83ae26a6117f39511e9521415a08f609cf",
+          "label": "卢承恩",
+          "grade": 0,
+          "total_score": 28.8,
+          "structured_score": 0.0,
+          "semantic_score": 64.1,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 14,
+          "key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba",
+          "label": "罗启帆",
+          "grade": 0,
+          "total_score": 28.4,
+          "structured_score": 0.0,
+          "semantic_score": 63.1,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 15,
+          "key": "sha256:1db8276fc43e26915ad86f2ab7634e30ddbed7a76c39e10d895fe9a3a02b31e1",
+          "label": "杨泽坚",
+          "grade": 0,
+          "total_score": 27.7,
+          "structured_score": 0.0,
+          "semantic_score": 61.6,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 16,
+          "key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68",
+          "label": "邓嘉睿",
+          "grade": 0,
+          "total_score": 27.3,
+          "structured_score": 0.0,
+          "semantic_score": 60.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 17,
+          "key": "sha256:ad8c9817a7e9931b43194b08ea0b94abba1cb50e8dfa2f0e6798caa53173687a",
+          "label": "张家浩",
+          "grade": 0,
+          "total_score": 27.0,
+          "structured_score": 0.0,
+          "semantic_score": 60.0,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        }
+      ],
+      "evidence_coverage": 1.0,
+      "evidence_missing": [],
+      "recall@5": 1.0,
+      "precision@5": 0.6,
+      "ndcg@5": 0.6306,
+      "recall@10": 1.0,
+      "precision@10": 0.3,
+      "ndcg@10": 0.6306,
+      "mrr": 0.5
+    },
+    {
+      "case_id": "newenergy-sales-manager-channel",
+      "jd": "招聘新能源销售经理，需要渠道管理经验，工作地点杭州或上海。",
+      "expected": [
+        {
+          "key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d",
+          "label": "陈星野",
+          "grade": 3
+        },
+        {
+          "key": "sha256:cbc5393d1070a9e6e77ec085fec35cb01a3bf4c4fdaea430f1207a81d443cc06",
+          "label": "汪静涛",
+          "grade": 2
+        },
+        {
+          "key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba",
+          "label": "罗启帆",
+          "grade": 1
+        }
+      ],
+      "unresolved": [],
+      "ranked": [
+        {
+          "rank": 1,
+          "key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d",
+          "label": "陈星野",
+          "grade": 3,
+          "total_score": 79.0,
+          "structured_score": 100.0,
+          "semantic_score": 75.5,
+          "rerank_score": 50.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 2,
+          "key": "sha256:2b5b46a8366de405247873b5d350b579f87861a7e2a99a95052a7933e661df40",
+          "label": "林若川",
+          "grade": 0,
+          "total_score": 57.9,
+          "structured_score": 66.7,
+          "semantic_score": 65.6,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 3,
+          "key": "sha256:cbc5393d1070a9e6e77ec085fec35cb01a3bf4c4fdaea430f1207a81d443cc06",
+          "label": "汪静涛",
+          "grade": 2,
+          "total_score": 49.4,
+          "structured_score": 33.3,
+          "semantic_score": 72.7,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 4,
+          "key": "sha256:36a9859bdc87ff5a2b0964763eac1d4f4c2df43c1dd375f25df8efa6cdf07cc4",
+          "label": "周启明",
+          "grade": 0,
+          "total_score": 47.6,
+          "structured_score": 33.3,
+          "semantic_score": 68.7,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 5,
+          "key": "sha256:218084fa32c197ea49552ef3c51ee03c335185100227b27b2dc69c1fc988d411",
+          "label": "蒋子恒",
+          "grade": 0,
+          "total_score": 46.6,
+          "structured_score": 33.3,
+          "semantic_score": 66.5,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 6,
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 0,
+          "total_score": 46.1,
+          "structured_score": 33.3,
+          "semantic_score": 65.3,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 7,
+          "key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba",
+          "label": "罗启帆",
+          "grade": 1,
+          "total_score": 46.0,
+          "structured_score": 33.3,
+          "semantic_score": 65.3,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 8,
+          "key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68",
+          "label": "邓嘉睿",
+          "grade": 0,
+          "total_score": 41.0,
+          "structured_score": 33.3,
+          "semantic_score": 65.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 9,
+          "key": "sha256:1db8276fc43e26915ad86f2ab7634e30ddbed7a76c39e10d895fe9a3a02b31e1",
+          "label": "杨泽坚",
+          "grade": 0,
+          "total_score": 38.9,
+          "structured_score": 33.3,
+          "semantic_score": 60.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 10,
+          "key": "sha256:8634704b6cc4bb342de4d8f4be19c9429259597c6ba1c8e03aecea48f3fa9273",
+          "label": "邱文彬",
+          "grade": 0,
+          "total_score": 38.9,
+          "structured_score": 33.3,
+          "semantic_score": 60.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 11,
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 0,
+          "total_score": 29.7,
+          "structured_score": 0.0,
+          "semantic_score": 66.0,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 12,
+          "key": "sha256:21da3ba2e17c747f7999facc12588bfa42572de928e02b6ed301e62658d26f2c",
+          "label": "苏文卿",
+          "grade": 0,
+          "total_score": 29.2,
+          "structured_score": 0.0,
+          "semantic_score": 64.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 13,
+          "key": "sha256:87b3c662c1255da1455a5519feb69ccd8190ab353543ee1f432e25d18e88156d",
+          "label": "郑天华",
+          "grade": 0,
+          "total_score": 29.1,
+          "structured_score": 0.0,
+          "semantic_score": 64.7,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 14,
+          "key": "sha256:39d2cc7c349414d8185d52ce87c44c83ae26a6117f39511e9521415a08f609cf",
+          "label": "卢承恩",
+          "grade": 0,
+          "total_score": 28.9,
+          "structured_score": 0.0,
+          "semantic_score": 64.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 15,
+          "key": "sha256:888ff381430da658b099d200e63ae3f1f4e9a9df966abb9ed104562d4723a821",
+          "label": "白晓宁",
+          "grade": 0,
+          "total_score": 28.9,
+          "structured_score": 0.0,
+          "semantic_score": 64.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 16,
+          "key": "sha256:a24b684412a36f01ef14b1f91e511c0248f6726d7309f50910715f2f0f13cc06",
+          "label": "何佳琪",
+          "grade": 0,
+          "total_score": 28.7,
+          "structured_score": 0.0,
+          "semantic_score": 63.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 17,
+          "key": "sha256:ad8c9817a7e9931b43194b08ea0b94abba1cb50e8dfa2f0e6798caa53173687a",
+          "label": "张家浩",
+          "grade": 0,
+          "total_score": 25.5,
+          "structured_score": 0.0,
+          "semantic_score": 56.6,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        }
+      ],
+      "evidence_coverage": 1.0,
+      "evidence_missing": [],
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "ndcg@5": 0.9049,
+      "recall@10": 1.0,
+      "precision@10": 0.2,
+      "ndcg@10": 0.9404,
+      "mrr": 1.0
+    },
+    {
+      "case_id": "medical-sales-manager-channel",
+      "jd": "招聘医疗设备销售经理，需要渠道管理经验，工作地点南京或华东。",
+      "expected": [
+        {
+          "key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba",
+          "label": "罗启帆",
+          "grade": 3
+        },
+        {
+          "key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d",
+          "label": "陈星野",
+          "grade": 1
+        },
+        {
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 1
+        }
+      ],
+      "unresolved": [],
+      "ranked": [
+        {
+          "rank": 1,
+          "key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba",
+          "label": "罗启帆",
+          "grade": 3,
+          "total_score": 80.7,
+          "structured_score": 100.0,
+          "semantic_score": 79.3,
+          "rerank_score": 50.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 2,
+          "key": "sha256:36a9859bdc87ff5a2b0964763eac1d4f4c2df43c1dd375f25df8efa6cdf07cc4",
+          "label": "周启明",
+          "grade": 0,
+          "total_score": 48.5,
+          "structured_score": 33.3,
+          "semantic_score": 70.8,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 3,
+          "key": "sha256:2b5b46a8366de405247873b5d350b579f87861a7e2a99a95052a7933e661df40",
+          "label": "林若川",
+          "grade": 0,
+          "total_score": 47.5,
+          "structured_score": 33.3,
+          "semantic_score": 68.5,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 4,
+          "key": "sha256:218084fa32c197ea49552ef3c51ee03c335185100227b27b2dc69c1fc988d411",
+          "label": "蒋子恒",
+          "grade": 0,
+          "total_score": 47.1,
+          "structured_score": 33.3,
+          "semantic_score": 67.7,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 5,
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 1,
+          "total_score": 47.1,
+          "structured_score": 33.3,
+          "semantic_score": 67.7,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 6,
+          "key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d",
+          "label": "陈星野",
+          "grade": 1,
+          "total_score": 46.3,
+          "structured_score": 33.3,
+          "semantic_score": 65.8,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 7,
+          "key": "sha256:21da3ba2e17c747f7999facc12588bfa42572de928e02b6ed301e62658d26f2c",
+          "label": "苏文卿",
+          "grade": 0,
+          "total_score": 30.5,
+          "structured_score": 0.0,
+          "semantic_score": 67.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 8,
+          "key": "sha256:888ff381430da658b099d200e63ae3f1f4e9a9df966abb9ed104562d4723a821",
+          "label": "白晓宁",
+          "grade": 0,
+          "total_score": 29.8,
+          "structured_score": 0.0,
+          "semantic_score": 66.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 9,
+          "key": "sha256:cbc5393d1070a9e6e77ec085fec35cb01a3bf4c4fdaea430f1207a81d443cc06",
+          "label": "汪静涛",
+          "grade": 0,
+          "total_score": 29.2,
+          "structured_score": 0.0,
+          "semantic_score": 64.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 10,
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 0,
+          "total_score": 29.0,
+          "structured_score": 0.0,
+          "semantic_score": 64.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 11,
+          "key": "sha256:a24b684412a36f01ef14b1f91e511c0248f6726d7309f50910715f2f0f13cc06",
+          "label": "何佳琪",
+          "grade": 0,
+          "total_score": 29.0,
+          "structured_score": 0.0,
+          "semantic_score": 64.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 12,
+          "key": "sha256:39d2cc7c349414d8185d52ce87c44c83ae26a6117f39511e9521415a08f609cf",
+          "label": "卢承恩",
+          "grade": 0,
+          "total_score": 29.0,
+          "structured_score": 0.0,
+          "semantic_score": 64.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 13,
+          "key": "sha256:87b3c662c1255da1455a5519feb69ccd8190ab353543ee1f432e25d18e88156d",
+          "label": "郑天华",
+          "grade": 0,
+          "total_score": 28.9,
+          "structured_score": 0.0,
+          "semantic_score": 64.2,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 14,
+          "key": "sha256:8634704b6cc4bb342de4d8f4be19c9429259597c6ba1c8e03aecea48f3fa9273",
+          "label": "邱文彬",
+          "grade": 0,
+          "total_score": 28.3,
+          "structured_score": 0.0,
+          "semantic_score": 62.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 15,
+          "key": "sha256:1db8276fc43e26915ad86f2ab7634e30ddbed7a76c39e10d895fe9a3a02b31e1",
+          "label": "杨泽坚",
+          "grade": 0,
+          "total_score": 27.3,
+          "structured_score": 0.0,
+          "semantic_score": 60.7,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 16,
+          "key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68",
+          "label": "邓嘉睿",
+          "grade": 0,
+          "total_score": 26.3,
+          "structured_score": 0.0,
+          "semantic_score": 58.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 17,
+          "key": "sha256:ad8c9817a7e9931b43194b08ea0b94abba1cb50e8dfa2f0e6798caa53173687a",
+          "label": "张家浩",
+          "grade": 0,
+          "total_score": 25.4,
+          "structured_score": 0.0,
+          "semantic_score": 56.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        }
+      ],
+      "evidence_coverage": 1.0,
+      "evidence_missing": [],
+      "recall@5": 1.0,
+      "precision@5": 0.2,
+      "ndcg@5": 0.9085,
+      "recall@10": 1.0,
+      "precision@10": 0.1,
+      "ndcg@10": 0.9523,
+      "mrr": 1.0
+    },
+    {
+      "case_id": "manufacturing-regional-manager",
+      "jd": "招聘制造业区域经理，需要渠道管理经验，工作地点广州。",
+      "expected": [
+        {
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 3
+        },
+        {
+          "key": "sha256:888ff381430da658b099d200e63ae3f1f4e9a9df966abb9ed104562d4723a821",
+          "label": "白晓宁",
+          "grade": 2
+        },
+        {
+          "key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68",
+          "label": "邓嘉睿",
+          "grade": 1
+        }
+      ],
+      "unresolved": [],
+      "ranked": [
+        {
+          "rank": 1,
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 3,
+          "total_score": 78.7,
+          "structured_score": 100.0,
+          "semantic_score": 75.0,
+          "rerank_score": 50.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 2,
+          "key": "sha256:888ff381430da658b099d200e63ae3f1f4e9a9df966abb9ed104562d4723a821",
+          "label": "白晓宁",
+          "grade": 2,
+          "total_score": 53.9,
+          "structured_score": 50.0,
+          "semantic_score": 69.9,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 3,
+          "key": "sha256:36a9859bdc87ff5a2b0964763eac1d4f4c2df43c1dd375f25df8efa6cdf07cc4",
+          "label": "周启明",
+          "grade": 0,
+          "total_score": 52.7,
+          "structured_score": 50.0,
+          "semantic_score": 67.2,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 4,
+          "key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba",
+          "label": "罗启帆",
+          "grade": 0,
+          "total_score": 51.9,
+          "structured_score": 50.0,
+          "semantic_score": 65.3,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 5,
+          "key": "sha256:218084fa32c197ea49552ef3c51ee03c335185100227b27b2dc69c1fc988d411",
+          "label": "蒋子恒",
+          "grade": 0,
+          "total_score": 51.9,
+          "structured_score": 50.0,
+          "semantic_score": 65.2,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 6,
+          "key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d",
+          "label": "陈星野",
+          "grade": 0,
+          "total_score": 51.5,
+          "structured_score": 50.0,
+          "semantic_score": 64.4,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 7,
+          "key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68",
+          "label": "邓嘉睿",
+          "grade": 1,
+          "total_score": 51.4,
+          "structured_score": 50.0,
+          "semantic_score": 64.2,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 8,
+          "key": "sha256:2b5b46a8366de405247873b5d350b579f87861a7e2a99a95052a7933e661df40",
+          "label": "林若川",
+          "grade": 0,
+          "total_score": 51.2,
+          "structured_score": 50.0,
+          "semantic_score": 63.7,
+          "rerank_score": 25.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 9,
+          "key": "sha256:21da3ba2e17c747f7999facc12588bfa42572de928e02b6ed301e62658d26f2c",
+          "label": "苏文卿",
+          "grade": 0,
+          "total_score": 38.0,
+          "structured_score": 25.0,
+          "semantic_score": 64.9,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 10,
+          "key": "sha256:8634704b6cc4bb342de4d8f4be19c9429259597c6ba1c8e03aecea48f3fa9273",
+          "label": "邱文彬",
+          "grade": 0,
+          "total_score": 36.1,
+          "structured_score": 25.0,
+          "semantic_score": 60.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 11,
+          "key": "sha256:ad8c9817a7e9931b43194b08ea0b94abba1cb50e8dfa2f0e6798caa53173687a",
+          "label": "张家浩",
+          "grade": 0,
+          "total_score": 36.1,
+          "structured_score": 25.0,
+          "semantic_score": 60.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 12,
+          "key": "sha256:39d2cc7c349414d8185d52ce87c44c83ae26a6117f39511e9521415a08f609cf",
+          "label": "卢承恩",
+          "grade": 0,
+          "total_score": 36.0,
+          "structured_score": 25.0,
+          "semantic_score": 60.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 13,
+          "key": "sha256:1db8276fc43e26915ad86f2ab7634e30ddbed7a76c39e10d895fe9a3a02b31e1",
+          "label": "杨泽坚",
+          "grade": 0,
+          "total_score": 34.8,
+          "structured_score": 25.0,
+          "semantic_score": 58.0,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 14,
+          "key": "sha256:a24b684412a36f01ef14b1f91e511c0248f6726d7309f50910715f2f0f13cc06",
+          "label": "何佳琪",
+          "grade": 0,
+          "total_score": 30.3,
+          "structured_score": 0.0,
+          "semantic_score": 67.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 15,
+          "key": "sha256:cbc5393d1070a9e6e77ec085fec35cb01a3bf4c4fdaea430f1207a81d443cc06",
+          "label": "汪静涛",
+          "grade": 0,
+          "total_score": 29.2,
+          "structured_score": 0.0,
+          "semantic_score": 64.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 16,
+          "key": "sha256:87b3c662c1255da1455a5519feb69ccd8190ab353543ee1f432e25d18e88156d",
+          "label": "郑天华",
+          "grade": 0,
+          "total_score": 28.8,
+          "structured_score": 0.0,
+          "semantic_score": 64.1,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 17,
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 0,
+          "total_score": 28.3,
+          "structured_score": 0.0,
+          "semantic_score": 63.0,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        }
+      ],
+      "evidence_coverage": 1.0,
+      "evidence_missing": [],
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "ndcg@5": 0.9468,
+      "recall@10": 1.0,
+      "precision@10": 0.2,
+      "ndcg@10": 0.9823,
+      "mrr": 1.0
+    },
+    {
+      "case_id": "internet-sales-director-enterprise",
+      "jd": "招聘互联网销售总监，需要团队管理经验，工作地点北京或深圳。",
+      "expected": [
+        {
+          "key": "sha256:39d2cc7c349414d8185d52ce87c44c83ae26a6117f39511e9521415a08f609cf",
+          "label": "卢承恩",
+          "grade": 3
+        },
+        {
+          "key": "sha256:a24b684412a36f01ef14b1f91e511c0248f6726d7309f50910715f2f0f13cc06",
+          "label": "何佳琪",
+          "grade": 2
+        }
+      ],
+      "unresolved": [],
+      "ranked": [
+        {
+          "rank": 1,
+          "key": "sha256:39d2cc7c349414d8185d52ce87c44c83ae26a6117f39511e9521415a08f609cf",
+          "label": "卢承恩",
+          "grade": 3,
+          "total_score": 76.4,
+          "structured_score": 87.5,
+          "semantic_score": 75.1,
+          "rerank_score": 60.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 2,
+          "key": "sha256:a24b684412a36f01ef14b1f91e511c0248f6726d7309f50910715f2f0f13cc06",
+          "label": "何佳琪",
+          "grade": 2,
+          "total_score": 56.4,
+          "structured_score": 50.0,
+          "semantic_score": 68.7,
+          "rerank_score": 40.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 3,
+          "key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba",
+          "label": "罗启帆",
+          "grade": 0,
+          "total_score": 50.1,
+          "structured_score": 37.5,
+          "semantic_score": 64.3,
+          "rerank_score": 40.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 4,
+          "key": "sha256:2b5b46a8366de405247873b5d350b579f87861a7e2a99a95052a7933e661df40",
+          "label": "林若川",
+          "grade": 0,
+          "total_score": 42.8,
+          "structured_score": 25.0,
+          "semantic_score": 66.8,
+          "rerank_score": 20.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 5,
+          "key": "sha256:218084fa32c197ea49552ef3c51ee03c335185100227b27b2dc69c1fc988d411",
+          "label": "蒋子恒",
+          "grade": 0,
+          "total_score": 42.7,
+          "structured_score": 25.0,
+          "semantic_score": 66.5,
+          "rerank_score": 20.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 6,
+          "key": "sha256:87b3c662c1255da1455a5519feb69ccd8190ab353543ee1f432e25d18e88156d",
+          "label": "郑天华",
+          "grade": 0,
+          "total_score": 42.5,
+          "structured_score": 25.0,
+          "semantic_score": 66.0,
+          "rerank_score": 20.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 7,
+          "key": "sha256:1db8276fc43e26915ad86f2ab7634e30ddbed7a76c39e10d895fe9a3a02b31e1",
+          "label": "杨泽坚",
+          "grade": 0,
+          "total_score": 42.4,
+          "structured_score": 25.0,
+          "semantic_score": 65.8,
+          "rerank_score": 20.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 8,
+          "key": "sha256:36a9859bdc87ff5a2b0964763eac1d4f4c2df43c1dd375f25df8efa6cdf07cc4",
+          "label": "周启明",
+          "grade": 0,
+          "total_score": 42.2,
+          "structured_score": 25.0,
+          "semantic_score": 65.5,
+          "rerank_score": 20.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 9,
+          "key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d",
+          "label": "陈星野",
+          "grade": 0,
+          "total_score": 42.0,
+          "structured_score": 25.0,
+          "semantic_score": 65.1,
+          "rerank_score": 20.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 10,
+          "key": "sha256:21da3ba2e17c747f7999facc12588bfa42572de928e02b6ed301e62658d26f2c",
+          "label": "苏文卿",
+          "grade": 0,
+          "total_score": 41.9,
+          "structured_score": 25.0,
+          "semantic_score": 64.8,
+          "rerank_score": 20.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 11,
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 0,
+          "total_score": 37.2,
+          "structured_score": 25.0,
+          "semantic_score": 63.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 12,
+          "key": "sha256:8634704b6cc4bb342de4d8f4be19c9429259597c6ba1c8e03aecea48f3fa9273",
+          "label": "邱文彬",
+          "grade": 0,
+          "total_score": 37.1,
+          "structured_score": 25.0,
+          "semantic_score": 63.1,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 13,
+          "key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68",
+          "label": "邓嘉睿",
+          "grade": 0,
+          "total_score": 36.3,
+          "structured_score": 25.0,
+          "semantic_score": 61.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 14,
+          "key": "sha256:ad8c9817a7e9931b43194b08ea0b94abba1cb50e8dfa2f0e6798caa53173687a",
+          "label": "张家浩",
+          "grade": 0,
+          "total_score": 35.1,
+          "structured_score": 25.0,
+          "semantic_score": 58.6,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 15,
+          "key": "sha256:cbc5393d1070a9e6e77ec085fec35cb01a3bf4c4fdaea430f1207a81d443cc06",
+          "label": "汪静涛",
+          "grade": 0,
+          "total_score": 32.2,
+          "structured_score": 0.0,
+          "semantic_score": 62.6,
+          "rerank_score": 20.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 16,
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 0,
+          "total_score": 31.7,
+          "structured_score": 0.0,
+          "semantic_score": 61.6,
+          "rerank_score": 20.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 17,
+          "key": "sha256:888ff381430da658b099d200e63ae3f1f4e9a9df966abb9ed104562d4723a821",
+          "label": "白晓宁",
+          "grade": 0,
+          "total_score": 31.7,
+          "structured_score": 0.0,
+          "semantic_score": 61.5,
+          "rerank_score": 20.0,
+          "rerank_mode": "rule"
+        }
+      ],
+      "evidence_coverage": 1.0,
+      "evidence_missing": [],
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "ndcg@5": 1.0,
+      "recall@10": 1.0,
+      "precision@10": 0.2,
+      "ndcg@10": 1.0,
+      "mrr": 1.0
+    },
+    {
+      "case_id": "finance-director-manufacturing",
+      "jd": "招聘制造业财务总监，负责年度预算与成本管控，工作地点杭州。",
+      "expected": [
+        {
+          "key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68",
+          "label": "邓嘉睿",
+          "grade": 3
+        },
+        {
+          "key": "sha256:8634704b6cc4bb342de4d8f4be19c9429259597c6ba1c8e03aecea48f3fa9273",
+          "label": "邱文彬",
+          "grade": 2
+        },
+        {
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 1
+        }
+      ],
+      "unresolved": [],
+      "ranked": [
+        {
+          "rank": 1,
+          "key": "sha256:8193c9725dd56491ef870fcea4ec1b57a83abc63eb3ef191a2d0deb76f682e68",
+          "label": "邓嘉睿",
+          "grade": 3,
+          "total_score": 80.2,
+          "structured_score": 100.0,
+          "semantic_score": 75.1,
+          "rerank_score": 57.1,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 2,
+          "key": "sha256:893d79f927b24ed21812b78da7f5313e4f51e982468e9750f34c1cd3104cc12b",
+          "label": "汤文渊",
+          "grade": 1,
+          "total_score": 48.0,
+          "structured_score": 50.0,
+          "semantic_score": 61.4,
+          "rerank_score": 14.3,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 3,
+          "key": "sha256:7d9fd688a2a31f7bc9f9b16fa0090bcdbb1e7934765ac0492e414ac7576d950d",
+          "label": "陈星野",
+          "grade": 0,
+          "total_score": 45.3,
+          "structured_score": 50.0,
+          "semantic_score": 61.7,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 4,
+          "key": "sha256:8634704b6cc4bb342de4d8f4be19c9429259597c6ba1c8e03aecea48f3fa9273",
+          "label": "邱文彬",
+          "grade": 2,
+          "total_score": 44.1,
+          "structured_score": 25.0,
+          "semantic_score": 65.8,
+          "rerank_score": 28.6,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 5,
+          "key": "sha256:888ff381430da658b099d200e63ae3f1f4e9a9df966abb9ed104562d4723a821",
+          "label": "白晓宁",
+          "grade": 0,
+          "total_score": 38.2,
+          "structured_score": 25.0,
+          "semantic_score": 59.2,
+          "rerank_score": 14.3,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 6,
+          "key": "sha256:ad8c9817a7e9931b43194b08ea0b94abba1cb50e8dfa2f0e6798caa53173687a",
+          "label": "张家浩",
+          "grade": 0,
+          "total_score": 37.9,
+          "structured_score": 25.0,
+          "semantic_score": 64.8,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 7,
+          "key": "sha256:218084fa32c197ea49552ef3c51ee03c335185100227b27b2dc69c1fc988d411",
+          "label": "蒋子恒",
+          "grade": 0,
+          "total_score": 36.0,
+          "structured_score": 25.0,
+          "semantic_score": 60.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 8,
+          "key": "sha256:36a9859bdc87ff5a2b0964763eac1d4f4c2df43c1dd375f25df8efa6cdf07cc4",
+          "label": "周启明",
+          "grade": 0,
+          "total_score": 36.0,
+          "structured_score": 25.0,
+          "semantic_score": 60.5,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 9,
+          "key": "sha256:1db8276fc43e26915ad86f2ab7634e30ddbed7a76c39e10d895fe9a3a02b31e1",
+          "label": "杨泽坚",
+          "grade": 0,
+          "total_score": 35.7,
+          "structured_score": 25.0,
+          "semantic_score": 59.9,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 10,
+          "key": "sha256:2b5b46a8366de405247873b5d350b579f87861a7e2a99a95052a7933e661df40",
+          "label": "林若川",
+          "grade": 0,
+          "total_score": 35.6,
+          "structured_score": 25.0,
+          "semantic_score": 59.6,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 11,
+          "key": "sha256:21da3ba2e17c747f7999facc12588bfa42572de928e02b6ed301e62658d26f2c",
+          "label": "苏文卿",
+          "grade": 0,
+          "total_score": 35.0,
+          "structured_score": 25.0,
+          "semantic_score": 58.3,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 12,
+          "key": "sha256:39d2cc7c349414d8185d52ce87c44c83ae26a6117f39511e9521415a08f609cf",
+          "label": "卢承恩",
+          "grade": 0,
+          "total_score": 34.1,
+          "structured_score": 25.0,
+          "semantic_score": 56.4,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 13,
+          "key": "sha256:77ad1c51fcc65cb71321c4ccd6b3aba6e4d4dbaf361dec57526737630ebebaba",
+          "label": "罗启帆",
+          "grade": 0,
+          "total_score": 33.9,
+          "structured_score": 25.0,
+          "semantic_score": 56.0,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 14,
+          "key": "sha256:6043e93604586c0d7cacfbbd471bcfd99f7cedab2764321478f6a31eb9783320",
+          "label": "崔亦帆",
+          "grade": 0,
+          "total_score": 27.4,
+          "structured_score": 0.0,
+          "semantic_score": 60.9,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 15,
+          "key": "sha256:cbc5393d1070a9e6e77ec085fec35cb01a3bf4c4fdaea430f1207a81d443cc06",
+          "label": "汪静涛",
+          "grade": 0,
+          "total_score": 26.3,
+          "structured_score": 0.0,
+          "semantic_score": 58.4,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 16,
+          "key": "sha256:a24b684412a36f01ef14b1f91e511c0248f6726d7309f50910715f2f0f13cc06",
+          "label": "何佳琪",
+          "grade": 0,
+          "total_score": 25.9,
+          "structured_score": 0.0,
+          "semantic_score": 57.6,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        },
+        {
+          "rank": 17,
+          "key": "sha256:87b3c662c1255da1455a5519feb69ccd8190ab353543ee1f432e25d18e88156d",
+          "label": "郑天华",
+          "grade": 0,
+          "total_score": 25.5,
+          "structured_score": 0.0,
+          "semantic_score": 56.7,
+          "rerank_score": 0.0,
+          "rerank_mode": "rule"
+        }
+      ],
+      "evidence_coverage": 1.0,
+      "evidence_missing": [],
+      "recall@5": 1.0,
+      "precision@5": 0.4,
+      "ndcg@5": 0.95,
+      "recall@10": 1.0,
+      "precision@10": 0.2,
+      "ndcg@10": 0.95,
+      "mrr": 1.0
+    }
+  ]
+}
