@@ -97,6 +97,9 @@ def resize_column(target_dimension: int, dry_run: bool) -> None:
 
 
 def rebuild_index(dry_run: bool, drop_first: bool = False) -> None:
+    if dry_run:
+        print("  · dry-run：跳过索引写入")
+        return
     if engine.dialect.name != "postgresql":
         print("  · 非 Postgres，跳过 HNSW 索引")
         return
@@ -236,6 +239,9 @@ def main() -> int:
                 encoding="utf-8",
             )
             print(f"  ! {len(failures)} 个文本块失败，已写入 {FAILED_FILE.name}，可加 --only-failed 续跑")
+            write_signature("pending-reindex")
+            print("重建未完成，保留待更新状态。")
+            return 1
         else:
             if FAILED_FILE.exists():
                 FAILED_FILE.unlink()

@@ -1,5 +1,6 @@
 from typing import Any
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+from urllib.parse import urlsplit
 
 
 class LoginIn(BaseModel):
@@ -152,6 +153,29 @@ class SettingsUpdateIn(BaseModel):
     embedding_base_url: str | None = Field(default=None, max_length=500)
     embedding_model: str | None = Field(default=None, max_length=128)
     embedding_dimensions: int | None = Field(default=None, ge=0, le=4096)
+
+    @field_validator("api_key", "embedding_api_key", "base_url", "embedding_base_url", "chat_model", "embedding_model", "embedding_provider")
+    @classmethod
+    def single_line(cls, value):
+        if value is not None and any(char in value for char in ("\n", "\r", "\x00")):
+            raise ValueError("配置必须为单行文本")
+        return value.strip() if isinstance(value, str) else value
+
+    @field_validator("base_url", "embedding_base_url")
+    @classmethod
+    def service_url(cls, value):
+        if value:
+            parsed = urlsplit(value)
+            if parsed.scheme not in ("http", "https") or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
+                raise ValueError("请填写不含凭据和查询参数的服务地址")
+        return value
+
+    @field_validator("embedding_provider")
+    @classmethod
+    def known_provider(cls, value):
+        if value is not None and value not in {"hash", "custom", "siliconflow", "zhipu", "dashscope", "openai"}:
+            raise ValueError("不支持的检索服务")
+        return value
 
 
 class ApiError(BaseModel):

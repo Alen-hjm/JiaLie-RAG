@@ -49,13 +49,20 @@ export class ApiFailure extends Error {
 export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers)
   if (options.body && !(options.body instanceof FormData)) headers.set('content-type', 'application/json')
-  const response = await fetch(path, {...options, headers, credentials: 'include'})
+  let response: Response
+  try { response = await fetch(path, {...options, headers, credentials: 'include'}) }
+  catch { throw new ApiFailure('暂时无法连接，请检查网络后重试。', 0) }
   if (!response.ok) {
-    let message = `请求失败 (${response.status})`
+    let message = '操作未完成，请稍后重试。'
     try {
       const body = await response.json()
-      message = body.detail?.message || body.message || message
+      const detail = body.detail?.message || body.message
+      if (typeof detail === 'string' && !/api|key|token|sql|traceback|embedding|向量|模型|http|exception|error|\.env|provider|timeout/i.test(detail) && response.status < 500) message = detail
     } catch { /* use fallback */ }
+    if (response.status >= 500) message = '服务暂时繁忙，请稍后重试；若持续失败，请联系服务负责人。'
+    if (response.status === 429) message = '操作较频繁，请稍等片刻再试。'
+    if (response.status === 413) message = '文件过大，请缩小文件后重新上传。'
+    if (response.status === 422) message = '请检查填写内容或上传的文件后重试。'
     throw new ApiFailure(message, response.status, response.headers.get('x-request-id') || undefined)
   }
   if (response.status === 204) return undefined as T
