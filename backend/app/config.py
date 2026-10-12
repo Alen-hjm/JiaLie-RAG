@@ -23,6 +23,7 @@ BACKEND_ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
 # preset, and only EMBEDDING_API_KEY has to be supplied.
 EMBEDDING_PRESETS: dict[str, tuple[str, str, int]] = {
     "hash": ("", "deterministic-hash-v1", 1536),
+    "custom": ("", "", 1536),
     "siliconflow": ("https://api.siliconflow.cn/v1", "BAAI/bge-m3", 1024),
     "zhipu": ("https://open.bigmodel.cn/api/paas/v4", "embedding-3", 1024),
     "dashscope": ("https://dashscope.aliyuncs.com/compatible-mode/v1", "text-embedding-v3", 1024),

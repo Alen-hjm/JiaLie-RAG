@@ -1,77 +1,215 @@
-import { useEffect, useState } from 'react'
-import { Alert, Button, Card, Descriptions, Form, Input, Select, Tag, message } from 'antd'
-import { api, AppSettings } from '../api'
+import { StudioHeading } from "../components/StudioHeading";
+import { ModelConnection } from "../components/ModelConnection";
+import { useState } from "react";
+import { Button, Radio, Switch, message } from "antd";
+import {
+  CheckOutlined,
+  FileSearchOutlined,
+  MessageOutlined,
+  SafetyCertificateOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
+import {
+  defaultPreferences,
+  Preferences,
+  readPreferences,
+  savePreferences,
+} from "../preferences";
 
-export default function SettingsPage(){
-  const [form]=Form.useForm(); const [settings,setSettings]=useState<AppSettings>(); const [testing,setTesting]=useState(false)
-  // embedding_base_url / embedding_model / embedding_dimensions 故意不预填：
-  // 留空 = 使用服务商预设。若把"解析后的值"回填再保存，就会把当天的预设
-  // 固化进 .env，之后切换服务商时仍会拿旧模型名去调新服务商。
-  const load=()=>api<AppSettings>('/api/settings').then(x=>{setSettings(x);form.setFieldsValue({model_mode:x.model_mode,base_url:x.base_url,chat_model:x.chat_model,timeout_seconds:x.timeout_seconds,embedding_provider:x.embedding_provider,embedding_mode:x.embedding_mode,embedding_base_url:'',embedding_model:'',embedding_dimensions:undefined,rerank_mode:x.rerank_mode,rerank_top_n:x.rerank_top_n})})
-  useEffect(()=>{void load().catch(e=>message.error(e instanceof Error?e.message:'设置加载失败'))},[])
-  const save=async(v:any)=>{try{const x=await api<AppSettings>('/api/settings',{method:'PUT',body:JSON.stringify(v)});setSettings(x);form.resetFields(['api_key','embedding_api_key']);message.success('设置已保存到本机 .env')}catch(e){message.error(e instanceof Error?e.message:'保存失败')}}
-  const test=async()=>{setTesting(true);try{const x=await api<{ok:boolean;message:string}>('/api/settings/test-connection',{method:'POST'});message[x.ok?'success':'error'](x.message)}catch(e){message.error(e instanceof Error?e.message:'连接测试失败')}finally{setTesting(false)}}
-  const status=settings?.model_mode==='mock'?['processing','Mock 离线模式']:settings?.api_key_configured?['success','API Key 已配置']:['warning','待配置聊天 API Key']
-  const vectors=settings?.vectors
-  const dims=vectors?Object.entries(vectors.dimension_counts||{}).map(([k,v])=>`${k} 维 × ${v}`).join('，')||'无':'—'
-  return <div className="page settings-page">
-    <header className="page-head"><div><p className="eyebrow">MODEL SETTINGS</p><h1>设置</h1><p>配置聊天模型与向量服务，两者互相独立。</p></div></header>
-
-    <Card className="settings-card" title="① 向量检索（RAG 的语义层）" style={{marginBottom:16}}>
-      {settings?.embedding_is_placeholder
-        ? <Alert type="warning" showIcon style={{marginBottom:14}}
-            message="当前使用占位向量（哈希），语义分不具实际意义"
-            description={<>向量是由文本哈希得到的确定性数值，<b>与语义无关</b>。此时 45% 的「语义相关」权重实际是噪声，排序主要靠结构化条件与关键词。配置真实向量服务后执行 <code>python -m scripts.reindex_embeddings</code> 重建索引即可。</>}/>
-        : <Alert type="success" showIcon style={{marginBottom:14}} message={`向量服务已启用：${settings?.embedding_provider} / ${settings?.embedding_model}`}/>}
-      {vectors?.needs_reindex && <Alert type="error" showIcon style={{marginBottom:14}} message="存在需要重建的向量" description={`共 ${vectors.total_chunks} 个文本块：缺少向量 ${vectors.missing_vectors} 个，维度与当前配置不一致 ${vectors.mismatched_vectors} 个。请执行 python -m scripts.reindex_embeddings。`}/>}
-      <Descriptions size="small" column={{xs:1,sm:2,md:3}} style={{marginBottom:12}}>
-        <Descriptions.Item label="当前向量后端"><Tag color={settings?.embedding_is_placeholder?'warning':'success'}>{settings?.embedding_label}</Tag></Descriptions.Item>
-        <Descriptions.Item label="维度">{settings?.embedding_dimensions}</Descriptions.Item>
-        <Descriptions.Item label="已入库文本块">{vectors?.total_chunks ?? 0}</Descriptions.Item>
-        <Descriptions.Item label="实际存储维度">{dims}</Descriptions.Item>
-        <Descriptions.Item label="向量 Key">{settings?.embedding_key_configured?`已配置 ${settings.embedding_key_masked}`:'未配置'}</Descriptions.Item>
-        <Descriptions.Item label="模式">{settings?.embedding_mode}</Descriptions.Item>
-      </Descriptions>
-      <Form form={form} layout="vertical" onFinish={save}>
-        <div className="settings-grid">
-          <Form.Item label="向量服务商" name="embedding_provider" extra="hash = 离线占位；拿到 Key 后改为 siliconflow / zhipu / dashscope">
-            <Select options={[{value:'hash',label:'hash（本地占位，无需 Key）'},{value:'siliconflow',label:'siliconflow · BAAI/bge-m3'},{value:'zhipu',label:'zhipu · embedding-3'},{value:'dashscope',label:'dashscope · text-embedding-v3'},{value:'openai',label:'openai · text-embedding-3-small'}]}/>
-          </Form.Item>
-          <Form.Item label="向量 API Key" name="embedding_api_key" extra="独立于聊天 Key，只保存在本机 .env">
-            <Input.Password placeholder={settings?.embedding_key_masked||'sk-...'} />
-          </Form.Item>
-          <Form.Item label="向量模式" name="embedding_mode"><Select options={[{value:'auto',label:'auto（有 Key 走真实，无 Key 占位）'},{value:'real',label:'real（必须真实，失败即报错）'},{value:'hash',label:'hash（强制占位）'}]}/></Form.Item>
-          <Form.Item label="向量模型" name="embedding_model" extra="留空 = 使用服务商默认模型"><Input placeholder={settings?.embedding_model}/></Form.Item>
-          <Form.Item label="向量维度" name="embedding_dimensions" extra="0 = 使用服务商原生维度，改动后必须重建向量"><Input type="number" /></Form.Item>
-          <Form.Item label="向量 Base URL" name="embedding_base_url" extra="留空 = 使用服务商默认地址"><Input placeholder={settings?.embedding_base_url}/></Form.Item>
-        </div>
-
-        <div className="section-label"><p className="eyebrow">RERANK</p><h2>② 最终重排（决定 20% 的 rerank_score）</h2></div>
-        {settings?.rerank_mode==='llm' && settings?.rerank_effective==='rule'
-          ? <Alert type="warning" showIcon style={{marginBottom:14}} message="已选择 llm，但当前聊天模型不可用，实际仍按 rule 打分"/>
-          : <Alert type="info" showIcon style={{marginBottom:14}}
-              message={settings?.rerank_mode==='llm'?'LLM 批量打分：一次调用给 top-N 候选人打 0-100 分':'规则打分：按证据关键词覆盖率，免费、离线、可复现'}
-              description="评测结论：在当前 16 人语料上，llm 略低于 rule（nDCG@5 0.85 vs 0.87），因此默认保持 rule；切换后可用同一套评测集自行复现对比。"/>}
-        <div className="settings-grid">
-          <Form.Item label="重排方式" name="rerank_mode">
-            <Select options={[{value:'rule',label:'rule · 关键词覆盖（默认）'},{value:'llm',label:'llm · 大模型批量打分'}]}/>
-          </Form.Item>
-          <Form.Item label="LLM 裁判看到的候选人数" name="rerank_top_n" extra="只对总分最高的前 N 位重排，超出部分保持原顺序"><Input type="number" placeholder={String(settings?.rerank_top_n ?? 20)}/></Form.Item>
-        </div>
-
-        <div className="section-label"><p className="eyebrow">CHAT MODEL</p><h2>③ 聊天与结构化抽取</h2></div>
-        <div className="settings-status"><span>当前模型状态</span><Tag color={status?.[0]}>{status?.[1]}</Tag>{settings?.api_key_masked&&<small>{settings.api_key_masked}</small>}</div>
-        <div className="settings-grid">
-          <Form.Item label="模型模式" name="model_mode"><Select options={[{value:'deepseek',label:'DeepSeek（真实聊天）'},{value:'mock',label:'Mock（离线演示）'},{value:'openai',label:'OpenAI-compatible'}]}/></Form.Item>
-          <Form.Item label="聊天 API Key" name="api_key" extra="只保存在本机 .env，页面不会回显完整 Key"><Input.Password placeholder={settings?.api_key_masked||'sk-...'} /></Form.Item>
-          <Form.Item label="Base URL" name="base_url"><Input /></Form.Item>
-          <Form.Item label="对话模型" name="chat_model"><Input /></Form.Item>
-          <Form.Item label="请求超时（秒）" name="timeout_seconds"><Input type="number" /></Form.Item>
-        </div>
-        <div className="settings-actions"><Button onClick={test} loading={testing}>测试连接</Button><Button type="primary" htmlType="submit">保存设置</Button></div>
-      </Form>
-    </Card>
-
-    <div className="privacy-strip">真实简历在调用云端向量服务时会把原文发送给第三方服务商。上传前请确认已取得候选人授权；含第三方候选人信息的简历建议仅在本地使用占位向量或本地模型。</div>
-  </div>
+export default function SettingsPage() {
+  const [section, setSection] = useState<"preferences" | "connection">(
+    "preferences",
+  );
+  const [saved, setSaved] = useState(readPreferences);
+  const [draft, setDraft] = useState<Preferences>(saved);
+  const dirty = JSON.stringify(saved) !== JSON.stringify(draft);
+  const save = () => {
+    try {
+      savePreferences(draft);
+      setSaved({ ...draft });
+      message.success("使用偏好已保存");
+    } catch {
+      message.error("浏览器暂时无法保存，请检查是否禁用了本地存储后重试。");
+    }
+  };
+  return (
+    <div className="page settings-page customer-settings">
+      <StudioHeading
+        number="05"
+        label="YOUR WAY OF WORKING"
+        title="适合你的，"
+        accent="工作节奏。"
+        description="工作台设置 / 只调整看得见、用得上的习惯。"
+      />
+      <div className="settings-tabs" role="tablist" aria-label="设置分类">
+        <button
+          role="tab"
+          aria-selected={section === "preferences"}
+          onClick={() => setSection("preferences")}
+        >
+          使用偏好
+        </button>
+        <button
+          role="tab"
+          aria-selected={section === "connection"}
+          onClick={() => setSection("connection")}
+        >
+          模型接入 <span>服务管理</span>
+        </button>
+      </div>
+      {section === "connection" ? (
+        <ModelConnection />
+      ) : (
+        <>
+          <div className="settings-workspace">
+            <aside className="preference-preview">
+              <span className="eyebrow">LIVE PREVIEW / 即时预览</span>
+              <h2>
+                让工具，
+                <br />
+                跟上你的习惯。
+              </h2>
+              <div className="preview-message">
+                <span>✦</span>
+                <p>帮我寻找一位有团队管理经验的产品经理…</p>
+                <kbd>
+                  {draft.sendShortcut === "enter"
+                    ? "Enter ↵"
+                    : "Ctrl / ⌘ + Enter ↵"}
+                </kbd>
+              </div>
+              <div className="preview-result">
+                <div>
+                  <span>推荐展示</span>
+                  <strong>
+                    {draft.resultsPerPage}
+                    <small>位 / 次</small>
+                  </strong>
+                </div>
+                <div className="preview-lines">
+                  <i />
+                  <i />
+                  <i />
+                </div>
+                <p>
+                  {draft.expandEvidence
+                    ? "原文证据将随推荐一起展开"
+                    : "需要时，点击查看原文证据"}
+                </p>
+              </div>
+              <span className="preview-scope">
+                <SettingOutlined /> 当前浏览器生效 · 保存后应用
+              </span>
+            </aside>
+            <div className="preferences-controls">
+              <section className="panel preferences-panel">
+                <div className="preferences-section-title">
+                  <span>
+                    <MessageOutlined />
+                  </span>
+                  <div>
+                    <h2>对话习惯</h2>
+                    <p>选择你习惯的发送方式，避免长段需求误发送。</p>
+                  </div>
+                </div>
+                <div className="preference-row">
+                  <div>
+                    <h3>发送消息快捷键</h3>
+                    <p>输入框下方会显示当前使用的快捷键。</p>
+                  </div>
+                  <Radio.Group
+                    aria-label="发送消息快捷键"
+                    value={draft.sendShortcut}
+                    onChange={(event) =>
+                      setDraft({ ...draft, sendShortcut: event.target.value })
+                    }
+                  >
+                    <Radio value="enter">
+                      Enter 发送<small>Shift + Enter 换行</small>
+                    </Radio>
+                    <Radio value="modifier">
+                      Ctrl / ⌘ + Enter 发送<small>Enter 直接换行</small>
+                    </Radio>
+                  </Radio.Group>
+                </div>
+              </section>
+              <section className="panel preferences-panel">
+                <div className="preferences-section-title">
+                  <span>
+                    <FileSearchOutlined />
+                  </span>
+                  <div>
+                    <h2>推荐结果</h2>
+                    <p>用更舒服的方式浏览人才，随时回到简历核实。</p>
+                  </div>
+                </div>
+                <div className="preference-row">
+                  <div>
+                    <h3>每次展示的候选人数</h3>
+                    <p>只影响展示数量，不改变匹配结果；其余推荐可继续展开。</p>
+                  </div>
+                  <Radio.Group
+                    optionType="button"
+                    buttonStyle="solid"
+                    aria-label="每次展示的候选人数"
+                    value={draft.resultsPerPage}
+                    onChange={(event) =>
+                      setDraft({ ...draft, resultsPerPage: event.target.value })
+                    }
+                    options={[
+                      { label: "5 位", value: 5 },
+                      { label: "10 位", value: 10 },
+                    ]}
+                  />
+                </div>
+                <div className="preference-row">
+                  <div>
+                    <h3>自动展开简历证据</h3>
+                    <p>打开会话时，直接展示推荐所依据的原文。</p>
+                  </div>
+                  <Switch
+                    aria-label="自动展开简历证据"
+                    checked={draft.expandEvidence}
+                    onChange={(value) =>
+                      setDraft({ ...draft, expandEvidence: value })
+                    }
+                  />
+                </div>
+              </section>
+              <div className="preferences-actions">
+                <Button
+                  type="text"
+                  onClick={() => setDraft({ ...defaultPreferences })}
+                >
+                  恢复默认
+                </Button>
+                <span>
+                  {dirty ? (
+                    "有尚未保存的修改"
+                  ) : (
+                    <>
+                      <CheckOutlined /> 偏好已同步
+                    </>
+                  )}
+                </span>
+                <Button type="primary" disabled={!dirty} onClick={save}>
+                  保存偏好
+                </Button>
+              </div>
+            </div>
+          </div>
+          <aside className="preferences-note">
+            <SafetyCertificateOutlined />
+            <div>
+              <strong>安心使用，专注招聘</strong>
+              <p>
+                仅导入已获授权的简历。推荐用于辅助筛选，最终判断由你做出。服务由工作台统一维护，无需额外配置。
+              </p>
+              <small>偏好保存在当前浏览器；清除浏览器数据后将恢复默认。</small>
+            </div>
+          </aside>
+        </>
+      )}
+    </div>
+  );
 }

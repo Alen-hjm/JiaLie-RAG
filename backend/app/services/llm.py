@@ -27,9 +27,9 @@ class ModelServiceError(RuntimeError):
 
 
 class ModelService:
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, settings=None):
         self.db = db
-        self.settings = get_settings()
+        self.settings = settings or get_settings()
         self.client = None
         if self.settings.model_mode in {"openai", "deepseek"}:
             if not self.settings.chat_api_key:
