@@ -1,204 +1,256 @@
-# 嘉猎-智能问答系统
+# 嘉猎 · 智能招聘工作台
 
-面向招聘负责人与技术面试展示的 RAG 人才问答工作台。在首页用自然语言描述想找的人，系统会结合最近会话理解条件，从本地简历库中检索、分析并返回候选人排序、优势、缺口和可追溯的简历原文。
+**从一句招聘需求出发，在简历经历中找到合适的人。**
 
-> 匹配度用于缩小人才范围，不代表录用结论。系统不会使用性别、年龄、民族等敏感属性参与排名。
+嘉猎是面向招聘负责人和招聘顾问的 RAG 人才检索工作台。导入已授权的简历后，可以用自然语言描述岗位、连续补充条件，查看推荐依据与简历原文，再收藏并对比候选人。
+
+前端采用 React、TypeScript、Ant Design 与 Motion，后端采用 FastAPI；支持本机 SQLite 开发和 PostgreSQL + pgvector 部署。没有模型密钥时，也可以使用离线演示模式体验业务流程。
+
+> 推荐用于辅助筛选，不代表录用结论。系统不使用性别、年龄、民族等敏感属性参与排名。离线演示使用规则与哈希占位向量，不代表真实模型或语义检索效果。
+
+[界面预览](#界面预览) · [快速启动](#快速启动) · [模型接入](#模型接入) · [使用流程](#使用流程) · [测试与评测](#测试与评测)
 
 ## 界面预览
 
-> 以下截图来自真实运行实例（`MODEL_MODE=deepseek` + `EMBEDDING_PROVIDER=zhipu`，语料为 `scripts/seed_demo.py` 生成的虚构简历）。
+以下为新版工作台实际运行截图，使用离线演示配置与虚构简历，不包含真实客户数据。页面数量和推荐结果随本地数据变化。
 
-### 智能找人（首页）
+### 智能找人
 
-首页采用「左侧最近会话 + 右侧连续问答」的布局。用一句大白话描述需求即可开始，系统会把多轮对话里的新条件**合并**进岗位画像，而不是覆盖。
+自然语言搜索入口结合场景建议、历史会话和连续追问。背景光束、透视卡片与跟随描边参考 [Aceternity UI](https://ui.aceternity.com/components)，支持暂停动效与系统减少动态效果偏好。
 
-![智能找人](docs/images/01-search.png)
+![智能找人首页](docs/images/workspace-search.png)
 
-### 人才雷达
+### 招聘概览
 
-人才库规模、最近岗位，以及「条件 → 意义 → 证据」三层匹配的定位说明。
+岗位进展、人才资产与下一步行动集中呈现，可以直接进入对应任务。
 
-![人才雷达](docs/images/02-radar.png)
+![招聘概览](docs/images/workspace-overview.png)
 
-### 简历库
+### 人才库
 
-源文件、人才画像与语义索引在这里保持同步；每份简历都带处理状态，导入失败会在原地给出可操作提示。
+拖放导入、处理状态、姓名与技能搜索、城市与经验筛选，共同组成可持续维护的人才名册。
 
-![简历库](docs/images/03-resumes.png)
+![人才库](docs/images/workspace-library.png)
 
-### 候选人档案
+### 招聘岗位
 
-经历时间线、履历亮点、可展开的简历原文。**证据优先**——每个结论都能回溯到简历的哪一行，而不是只给一个黑箱分数。
+紧凑岗位档案配合状态筛选与排序；新建岗位后直接打开详情进行匹配，已有会话可继续追问。
 
-![候选人档案](docs/images/07-candidate.png)
+![招聘岗位](docs/images/workspace-jobs.png)
 
-### 岗位管理
+### 工作台设置
 
-![岗位管理](docs/images/06-jobs.png)
+「使用偏好」提供发送方式、展示人数和证据展开设置；「模型接入」供服务负责人独立配置对话与检索服务。
 
-### 调用审计
+![模型接入](docs/images/workspace-settings.png)
 
-记录模型、耗时、Token 与请求指纹，**默认不保存完整提示词**。向量若是占位实现，状态列会如实标注 `placeholder`，不会伪装成 `success`。
+更多交互与组件来源见 [前端设计说明](frontend/DESIGN.md)。
 
-![调用审计](docs/images/04-audits.png)
+## 能做什么
 
-## 核心能力
+| 使用场景 | 当前能力 |
+| --- | --- |
+| 导入人才 | 批量导入文本型 PDF、DOCX，去重、异步解析并显示处理状态 |
+| 描述招聘需求 | 自然语言提取岗位、行业、地点、经验、技能和管理要求，多轮追问补充条件 |
+| 查找候选人 | 结构化条件匹配、向量与关键词混合召回、招聘领域同义词扩展 |
+| 核实推荐 | 展示匹配亮点、待核实信息和原文引用，进入档案查看经历 |
+| 推进岗位 | 创建岗位、查看推荐、重新匹配、继续关联问答 |
+| 收藏与对比 | 收藏候选人，选择 2–3 人并排比较经验、技能与履历亮点 |
+| 连续操作 | 可收起侧栏、Ctrl / Cmd + K 快捷导航、切页保留草稿、筛选与滚动位置 |
+| 接入模型 | 多家服务商预设、自定义兼容接口、草稿连接测试与服务端保存 |
 
-- 批量导入文本型 PDF、DOCX，自动去重并展示异步处理进度。
-- 将简历解析为候选人画像、工作经历和带来源位置的语义文本块。
-- 将 JD 解析为岗位、行业、地域、年限、技能、管理经验和必要/优先条件。
-- 以 35% 结构化匹配、45% 语义相关、20% 证据覆盖形成透明评分。
-- **混合召回**：向量路（PostgreSQL 走 pgvector `<=>` 算子 + HNSW 索引）与关键词路各自召回，再用 RRF（倒数排名融合，k=60）合并。
-- **招聘领域同义词扩展**：关键词召回前，先把行业词 / 职位词按别名词典双向扩展，解决「简历写『晶圆厂客户』、JD 写『Fab 客户』」这类漏召回。只扩大召回面、**不参与打分**，所以词表里的噪声最多让人进入候选池，不会把他排到不该有的位置。附 A/B 实测，见「评测结果」。
-- **LangGraph 编排（可选）**：`ORCHESTRATION_MODE=langgraph` 时走状态图「召回 → 召回质量评估 →（不够则自动改写查询重查，上限 2 轮）→ 生成」，界面上展示节点执行轨迹；任何节点失败自动退回固定流水线。
-- 展示匹配依据、待核实缺口与原文证据；模型只做解释，不覆盖检索分数。
-- **空结果不再是"一片空白"**：检索为空时逐条排查是哪一项硬性条件筛掉了所有人，并给出可操作的放宽建议。
-- **简历敏感信息默认脱敏**：证据引用、以及送进大模型的文本里，手机号 / 邮箱 / 身份证自动打码（`138****0001` / `l***@example.com`），姓名刻意保留——它是招聘流程的核心字段。
-- **启动即自检**：仍在用默认 `SECRET_KEY` / 默认管理员密码、或云端模式却没配 Key 时，启动日志会直接告警，而不是等到线上出问题。
-- 记录模型、耗时、Token、状态和请求哈希，不默认记录完整提示词。
-- 提供离线 Mock 模式与**占位向量**，面试现场没有网络或 API Key 也能演示完整链路。
-- 首页采用 Codex 式布局：左侧最近会话，右侧连续问答与推荐卡。
+偏好和收藏 ID 保存在当前浏览器，收藏不跨设备同步；候选人资料从鉴权 API 读取。页面状态在当前登录会话内保留，退出登录后清空。调用审计保留在后端，客户导航不展示内部运行轨迹和评分分项。
 
-> **向量后端是可插拔的，并且会如实标注自己的状态。**
-> 聊天与 embedding 是两套独立配置——DeepSeek 没有公开的 embedding 接口，所以未单独配置向量服务时，
-> 系统使用本地确定性哈希占位向量。此时 45% 的「语义相关」权重不具语义含义，这一点会在
-> `/api/health`、设置页与调用审计里显式标注为 `placeholder`，不会伪装成正常成功。
-> 配置真实向量服务的方法见「评测与向量服务」一节。
+## 快速启动
 
-## 架构
+### 本机开发
+
+准备 Python 3.12、Node.js 22 和 Git。以下命令以 Windows PowerShell 为例。
+
+```powershell
+git clone https://github.com/Alen-hjm/JiaLie-RAG.git
+cd JiaLie-RAG
+Copy-Item .env.example .env
+```
+
+编辑根目录 `.env` 中的 `SECRET_KEY`、`ADMIN_USERNAME` 和 `ADMIN_PASSWORD`。首次启动前设置自己的密钥与密码；离线体验保持 `MODEL_MODE=mock`、`EMBEDDING_PROVIDER=hash`。
+
+启动后端：
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m app.bootstrap
+# 可选：导入仓库提供的虚构简历
+.\.venv\Scripts\python.exe -m scripts.seed_demo
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --port 8010
+```
+
+另开终端启动前端：
+
+```powershell
+cd frontend
+npm ci
+npm run dev
+```
+
+打开 [http://localhost:5173](http://localhost:5173)，使用 `.env` 中配置的管理员账号登录。API 文档位于 [http://localhost:8010/api/docs](http://localhost:8010/api/docs)，健康检查为 `GET /api/health`。
+
+Linux / macOS 可用 `cp .env.example .env`，将上述虚拟环境命令替换为 `.venv/bin/python`。Vite 将 `/api` 请求代理至 `http://localhost:8010`。`bootstrap` 负责建表、初始化管理员与上传目录，不会重新解析已有简历。
+
+### Docker 部署
+
+复制并修改根目录 `.env` 后执行：
+
+```bash
+docker compose up --build -d
+# 可选：导入虚构演示数据
+docker compose exec api python -m scripts.seed_demo
+```
+
+前端端口为 `5173`，API 端口为 `8010`。Compose 自动使用 PostgreSQL + pgvector，并通过独立卷保存数据库和简历文件；本机开发继续使用 SQLite。
+
+**当前 Docker 配置通过 `env_file` 注入环境变量，优先级高于页面写入的 `.env` 文件。** 容器部署请在宿主机 `.env` 修改模型配置，再执行下面的命令重新创建 API 容器；单纯重启或在页面点击保存不能覆盖已经注入的变量。
+
+```bash
+docker compose up -d --force-recreate api
+```
+
+## 模型接入
+
+对话模型负责理解招聘需求、解析简历与生成说明；检索模型负责将简历转换为语义向量。两者可以来自不同服务商，密钥独立填写，不会自动复用。
+
+| 服务 | 对话 | 语义检索 |
+| --- | --- | --- |
+| DeepSeek | 支持 | 需另选检索服务 |
+| 阿里云百炼 | 支持 | 支持 |
+| 硅基流动 | 支持 | 支持 |
+| 智谱 | 支持 | 支持 |
+| OpenAI | 支持 | 支持 |
+| 自定义兼容接口 | 需兼容 Chat Completions 与项目所需结构化输出 | 需兼容 `/embeddings` |
+| 离线演示 | 规则模拟 | 哈希占位向量，无语义 |
+
+这里的「支持」指已提供配置和调用通路；预设模型是否可用取决于服务商账户、区域和权限。本轮未逐家完成真实云端验收。
+
+### 在页面配置
+
+适用于从根 `.env` 读取配置的本机部署：
+
+1. 打开「工作台设置 → 模型接入」。
+2. 分别选择对话和检索服务商，填写对应 API Key。预设地址与模型名称可按账户实际可用模型修改。
+3. 自定义接口填写服务根地址，如 `https://example.com/v1`，不要附加 `/chat/completions` 或 `/embeddings`。自定义检索模型的原生维度在折叠的「自定义模型选项」中设置。
+4. 点击「测试连接」。测试仅发送示例文字，不发送库内简历；检查对话结构化输出与检索向量维度。
+5. 检查通过后保存。选择离线模式时会明确提示未连接远程服务，不会把演示结果当成真实连接成功。
+6. 如果已有简历且更换了检索服务，按下一节更新索引，再进行真实搜索验收。
+
+密钥保存到服务端 `.env`，不写入浏览器存储；页面不回显完整密钥，离开设置时清空密钥输入。已有密钥时留空表示保留，更换服务商请填写对应密钥。当前一次启用一套对话配置和一套检索配置，尚不支持多配置档案或自动故障切换。
+
+### 使用环境文件配置
+
+例如，DeepSeek 对话搭配硅基流动检索：
+
+```dotenv
+MODEL_MODE=deepseek
+CHAT_BASE_URL=https://api.deepseek.com
+CHAT_MODEL=deepseek-chat
+CHAT_API_KEY=your-chat-key
+
+EMBEDDING_PROVIDER=siliconflow
+EMBEDDING_MODE=real
+EMBEDDING_API_KEY=your-embedding-key
+EMBEDDING_BASE_URL=
+EMBEDDING_MODEL=
+EMBEDDING_DIMENSIONS=0
+```
+
+检索地址、模型留空及维度为 `0` 时使用服务商预设。自定义对话使用 `MODEL_MODE=openai` 并填写对应的 `CHAT_*` 字段；自定义检索使用 `EMBEDDING_PROVIDER=custom`，填写地址、模型和实际输出维度。自定义检索请求不额外发送 `dimensions` 参数，而是使用模型原生输出。
+
+本机手工修改文件后重启后端。操作系统环境变量优先于 `.env`，请避免同一配置同时由多个来源管理。
+
+### 更新已有简历的检索索引
+
+更换检索服务、模型或维度后，即使维度相同也应全量更新，避免混用不同模型生成的向量。在 `backend` 目录执行：
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.reindex_embeddings --dry-run
+.\.venv\Scripts\python.exe -m scripts.reindex_embeddings --force --rebuild-index
+```
+
+Docker 使用：
+
+```bash
+docker compose exec api python -m scripts.reindex_embeddings --force --rebuild-index
+```
+
+重建按批处理，并记录配置指纹。失败记录写入 `backend/eval/reindex_failed.json`，脚本返回非零状态并保留待更新标记；排除服务错误后重新运行。提供 `--only-failed` 选项，但配置指纹仍不匹配时会优先执行全量重建。远程索引更新会调用检索服务并可能产生费用。
+
+完成后在设置页点击「重新读取」，确认待更新提示消失。`GET /api/health` 的 `embedding_is_placeholder=false` 表示已配置远程检索条件，实际连通性仍以连接测试和检索结果为准。
+
+## 使用流程
+
+1. 登录并确认数据处理告知，在人才库导入已授权简历，或使用虚构演示数据。
+2. 等待处理完成，在首页描述需求，例如「寻找上海销售经理，5 年以上经验，有团队管理经历」。也可参考 [半导体销售总监示例](docs/demo-jd.md)。
+3. 连续追问补充行业、技能或管理要求，查看候选人的匹配亮点与待核实信息。
+4. 展开原文证据，进入候选人档案核实经历；返回后继续当前筛选。
+5. 收藏感兴趣的人选，在「我的收藏」勾选 2–3 人进行对比。
+6. 在「招聘岗位」查看推荐、重新匹配或继续关联问答；也可以手动创建岗位再匹配。
+7. 在「招聘概览」查看岗位进展和待处理简历，在「使用偏好」调整自己的操作习惯。
+
+## 技术架构
 
 ```mermaid
 flowchart LR
     UI[React 招聘工作台] --> API[FastAPI]
     API --> Parser[PDF / DOCX 解析]
-    API --> LLM[OpenAI-compatible API]
-    Parser --> Profile[人才画像与文本块]
-    LLM --> Profile
+    Parser --> Chat[对话模型 / 离线规则]
+    Chat --> Profile[人才画像与文本块]
+    Profile --> Embed[独立检索模型 / 占位向量]
     Profile --> DB[(PostgreSQL + pgvector / SQLite)]
-    API --> Search[条件匹配 + 向量与关键词双路召回 + RRF 融合]
+    Embed --> DB
+    API --> Search[条件匹配 + 向量与关键词召回 + RRF]
     DB --> Search
-    Search --> UI
+    Search --> Evidence[匹配说明与原文证据]
+    Evidence --> UI
 ```
 
-前端采用“人才雷达台”视觉语言：深墨蓝代表受控数据空间，矿物青表示可验证信号；匹配结果卡片把证据链放在中心，而非只展示一个黑箱分数。
-
-## Docker 一键启动
-
-1. 复制配置：
-
-   ```bash
-   cp .env.example .env
-   ```
-
-2. 修改 `.env` 中的 `SECRET_KEY`、`ADMIN_PASSWORD`。离线演示保持 `MODEL_MODE=mock`；使用云端聊天模型时设置：
-
-   ```dotenv
-   MODEL_MODE=deepseek
-   CHAT_API_KEY=sk-your-deepseek-key
-   CHAT_BASE_URL=https://api.deepseek.com
-   CHAT_MODEL=deepseek-chat
-   ```
-
-   > **这个 Key 只能用于聊天，不能用于向量化。** DeepSeek 没有公开的 Embedding 接口，
-   > embedding 必须单独配置一家（见「评测与向量服务」）。两者是独立配置，互不复用。
-   > 请勿把 API Key 提交到 Git；`backend/.dockerignore` 已排除 `.env*`，防止 Key 被打进镜像。
-
-3. 启动：
-
-   ```bash
-   docker compose up --build
-   ```
-
-   > `docker-compose.yml` 会用 `api.environment` 把 `DATABASE_URL` / `UPLOAD_DIR` 覆盖为
-   > `postgres + /data/uploads`。所以根 `.env` 可以固定写 SQLite 供本机开发，
-   > 本机与容器两条路共用一份配置，不需要手工切换。
-
-4. 打开 `http://localhost:5173`。默认账号见 `.env`，首次进入前必须确认云端处理告知。
-
-5. 可选：写入 16 位虚构演示候选人：
-
-   ```bash
-   docker compose exec api python -m scripts.seed_demo
-   ```
-
-API 文档位于 `http://localhost:8010/api/docs`，健康检查为 `GET /api/health`。
-
-## 本机开发
-
-后端：
-
-```bash
-cd backend
-python -m venv .venv
-.venv/Scripts/pip install -r requirements.txt
-python -m app.bootstrap
-.venv/Scripts/uvicorn app.main:app --reload --port 8010
-```
-
-> 根 `.env` 里 `DATABASE_URL` 默认已经是 `sqlite:///./minglie.db`，**不需要再手工 set**。
-> `bootstrap` 现在只负责建表 / 建管理员 / 建上传目录，**不会重新解析已有简历**——
-> 需要重建向量时请显式执行 `python -m scripts.reindex_embeddings`。
-
-前端：
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Vite 会把 `/api` 转发至 `http://localhost:8010`。SQLite 仅用于本地快速开发；Docker 交付使用 PostgreSQL + pgvector。
-
-## 演示流程
-
-1. 以管理员身份登录，确认数据处理告知。
-2. 在“简历库”导入自己的已授权简历，或运行 `scripts.seed_demo`。
-3. 打开“智能找人”（首页），直接输入一句自然语言需求，或使用 [半导体销售总监示例](docs/demo-jd.md)。
-4. 检查系统提取的结构化条件，现场调整一个行业或技能标签，再追问一句继续筛选。
-5. 对比推荐卡上的字段匹配、语义相关和证据覆盖三个分项分数。
-6. 展开原文证据，再进入候选人档案查看经历时间线。
-7. 打开“调用审计”，展示请求哈希、耗时、状态（含占位向量标记）和不保存正文的设计。
-8. 打开“人才雷达”，展示人才库规模与最近岗位，作为收尾。
-
-## 数据与安全边界
-
-- 真实简历、数据库、日志、导出结果、`.env` 和 API Key 均被 Git 忽略。
-- Docker 使用独立卷保存 PostgreSQL 数据和简历文件，服务重启后仍然存在。
-- `MODEL_MODE=openai` / `deepseek` 会把简历原文发送给配置的聊天模型服务商；
-  **配置了云端 embedding 服务后，简历原文同样会发送给向量服务商**。请确认候选人授权，
-  并自行审查供应商的数据保留政策。仅做本地演示时建议保持 `EMBEDDING_PROVIDER=hash` 或使用本地模型，
-  让原文不出本机。
-- 云端结构化调用不把候选人敏感属性纳入排序；审计使用 SHA-256 请求指纹。
-- **输出侧 PII 脱敏**（`MASK_PII=true`，默认开启）：手机号 / 邮箱 / 身份证在"往外送"的边界上打码——
-  包括接口返回的证据引用、以及送给大模型的文本。只做输出脱敏、不动入库原文，因此不影响检索与打分结果；
-  需要原样核对时可临时设为 `false`。
-  > 已知边界：候选人档案页展示的联系方式来自入库原文，**目前尚未经过脱敏**。演示语料是虚构数据，
-  > 无实际影响；接入真实简历前应把脱敏扩展到详情接口。
-- 删除候选人会级联删除画像、经历、文本块、向量、匹配记录和本地原文件。
-- 扫描版 PDF、旧版 `.doc` 和 OCR 不在首版范围内，界面会返回可操作的失败提示。
+- 混合召回：向量与关键词分别召回，用 RRF 融合；PostgreSQL 支持 pgvector 与 HNSW 索引。
+- 招聘领域同义词扩展：扩大关键词召回范围，不直接改变打分权重。
+- 默认评分：35% 结构化条件、45% 语义相关、20% 证据覆盖；客户页面侧重可理解的说明与原文。
+- 可选编排：`ORCHESTRATION_MODE=langgraph` 启用召回质量评估与有界查询改写，失败退回固定流水线。
+- 可选重排：`RERANK_MODE=rule|llm`，默认规则模式；大模型调用失败时降级。
+- 后端审计记录模型、耗时、Token、状态与请求哈希，不默认保存完整提示词。
 
 ## 测试与评测
 
-```bash
-cd backend
-.venv/Scripts/pytest -q
+本轮本机验证（2026-10-12）：
 
+| 检查 | 结果与范围 |
+| --- | --- |
+| 前端测试 | 7 项通过 |
+| 后端测试 | 58 项通过 |
+| 生产构建 | 通过，仍有主包超过 500 kB 的体积提示 |
+| 浏览器业务流程 | 登录、演示连接检查与保存、离页密钥清空、DOCX 导入解析、建岗匹配、搜索追问、原文证据、收藏对比、退出登录通过 |
+| 响应式 | 岗位与模型接入页在 390 / 820 像素宽度下无横向溢出 |
+| 真实云端模型 | 本轮未提供有效密钥，真实连通性与语义效果尚未验收 |
+
+重新运行自动化检查：
+
+```powershell
+cd backend
+.\.venv\Scripts\python.exe -m pytest -q
 cd ../frontend
-npm run build
+npm ci
 npm test
+npm run build
 ```
 
-### 评测结果
+### 历史检索评测
 
-`backend/eval/gold.json` 提供不含真实个人信息的黄金集（schema v2：以**源文档 SHA-256** 作为稳定标识，
-带 grade 1–3 分级相关度），`scripts/evaluate.py` 会真实跑一遍检索链路并计算
-**Recall@K / Precision@K / MRR / NDCG@K**，结果落盘到 `eval/results*.json`。
+以下数据来自仓库保存的历史报告，**不是本轮界面改造后的重新评测结果**。语料为 17 位虚构候选人、37 个文本块、8 条样例，使用 `zhipu:embedding-3` 真实向量（1024 维），相关度阈值为 grade ≥ 2。
 
-语料：17 位虚构候选人 / 37 个文本块（`scripts/seed_demo.py`）；8 条评测样例；相关度阈值 grade ≥ 2。
-下表全部在**真实向量**（`zhipu:embedding-3`，1024 维）下测得。
-
-| 指标 | 纯向量召回 | 混合召回（无同义词扩展） | 混合召回（+ 同义词扩展） |
-|---|---|---|---|
+| 指标 | 纯向量召回 | 混合召回 | 混合召回 + 同义词扩展 |
+| --- | --- | --- | --- |
 | Recall@5 | 0.8646 | 0.8646 | **0.9688** |
 | Recall@10 | 0.9583 | 0.9583 | **1.0000** |
 | Precision@5 | 0.4000 | 0.4000 | **0.4500** |
@@ -206,116 +258,57 @@ npm test
 | NDCG@5 | 0.8718 | 0.8718 | **0.9062** |
 | NDCG@10 | 0.9084 | 0.9078 | **0.9300** |
 
-**两个值得点出来的结论：**
+来源：[纯向量](backend/eval/results_fusion_vector_only.json)、[混合召回](backend/eval/results_hybrid.json)、[同义词扩展](backend/eval/results_synonym_on.json)。该小规模样例集用于回归和方案比较，不能据此推断真实招聘场景的准确率。
 
-1. **词表让关键词路从"白搭"变成"有用"。** 没有同义词扩展时，混合召回的成绩与纯向量
-   **完全一致**——也就是说那会儿关键词路几乎没有贡献（字面完全相同的词，向量路本来就能覆盖）。
-   补上别名词典后，Recall@5 才从 0.86 抬到 0.97。
-   **"加了混合召回"和"混合召回起了作用"是两件事，必须分开验证**——否则很容易把一条闲置的
-   链路当成已完成的优化。
-2. **MRR 完全不动是好事。** 扩展只扩大召回面、不改变头部排序；如果 MRR 也跟着乱动，
-   反而说明排序被词表污染了。一个只涨召回、不动排序的改动，才算"安全的召回增强"。
+[黄金集](backend/eval/gold.json) 使用文档 SHA-256 标识，文件重生成导致哈希变化时支持姓名兜底；替换语料后应检查预期候选人是否成功解析。历史大模型重排对比使用了占位向量，其结论不应外推至真实语义检索，原始报告见 [规则重排](backend/eval/results_rerank_rule_deepseek.json) 和 [大模型重排](backend/eval/results_rerank_llm_deepseek.json)。
 
-> ⚠️ 早期版本的评测跑在**占位向量**上（哈希无语义），当时那组数字（R@5 0.67 → 0.77）
-> 只反映"向量失效时关键词路能兜多少底"，不能代表语义检索水平。上表是接入真实向量后重跑的。
-
-#### 踩过的坑：sha256 标识的脆弱性
-
-黄金集用文档 `sha256` 作为候选人标识（为了避开重名与改名的影响）。但 `python-docx` 会把
-**创建时间**写进 docx 的 core properties——所以同一份简历**重新生成一次，内容一字未改、
-哈希却会变**。这导致黄金集里 15 位候选人中有 8 位匹配失败，5 个样例的指标被**静默压成 0**，
-而评测程序并不报错。
-
-现已两头修复：`resolve_entry` 在哈希对不上时**按姓名兜底**（治本），并修正了黄金集里的过期哈希（治标）。
-**顺带一提，这也是个通用提醒**：指标"看起来正常"不代表它真的在测东西——当时那个 MRR 0.44 就是空跑的痕迹。
-
-#### 重排 A/B：规则 vs 大模型（负结果）
-
-`RERANK_MODE` 决定由谁打那 20% 的相关度分：`rule` = 证据关键词覆盖率，`llm` = 一次批量大模型调用给 top-N 打 0–100 分。
-用同一套黄金集对比的结果如下（两组除裁判外配置完全相同）：
-
-| 指标 | `rule` | `llm` | 变化 |
-|---|---|---|---|
-| Recall@5 | **0.82** | 0.79 | −0.03 |
-| NDCG@5 | **0.87** | 0.85 | −0.02 |
-| NDCG@10 | **0.90** | 0.89 | −0.01 |
-
-**结论：默认保持 `rule`。** 重排只占 20% 权重且只作用于 top-20，而此时 R@10 已接近饱和；
-再加上输入排序本身受占位向量污染，裁判再准也救不回被挤在后面的候选人。
-`llm` 作为开关保留（调用失败自动降级为 `rule`，界面显示实际生效的模式），
-等真实 embedding 接上后重跑同一套脚本即可重新判定。
+在后端虚拟环境中运行：
 
 ```bash
-cd backend
-.venv/Scripts/python -m scripts.evaluate --fusion vector_only --rerank rule --out eval/results_fusion_vector_only.json
-.venv/Scripts/python -m scripts.evaluate --fusion hybrid      --rerank rule --out eval/results_hybrid.json
-.venv/Scripts/python -m scripts.evaluate --fusion hybrid      --rerank llm  --out eval/results_rerank_llm_deepseek.json
-.venv/Scripts/python -m scripts.evaluate --list-candidates    # 编写/更新黄金集时用
+python -m scripts.evaluate --fusion vector_only --rerank rule --out eval/results_fusion_vector_only.json
+python -m scripts.evaluate --fusion hybrid --rerank rule --out eval/results_hybrid.json
+python -m scripts.evaluate --fusion hybrid --rerank llm --out eval/results_rerank_llm_deepseek.json
+python -m scripts.evaluate --list-candidates
 ```
 
-评测结束后会自动清理它创建的「【评测】」岗位与匹配记录，不污染演示数据（加 `--keep` 可保留）。
+评测结束后自动清理创建的评测岗位与匹配记录，使用 `--keep` 可保留。
 
-## 评测与向量服务
+## 数据与部署边界
 
-聊天模型与 embedding 是**两套独立配置**：DeepSeek 没有公开的 Embedding 接口，
-所以向量化必须单独配一家（代码内置了国内常见服务商的预设）。
-
-```dotenv
-# 可选：hash / siliconflow / zhipu / dashscope / openai
-EMBEDDING_PROVIDER=siliconflow
-EMBEDDING_MODE=auto            # auto: 有 Key 走真实，无 Key 走占位
-EMBEDDING_API_KEY=sk-xxxx
-EMBEDDING_BASE_URL=             # 留空 = 用服务商预设
-EMBEDDING_MODEL=                # 留空 = 用服务商预设（siliconflow 默认 BAAI/bge-m3，1024 维）
-EMBEDDING_DIMENSIONS=0          # 0 = 用服务商原生维度
-```
-
-配置完成后**必须重建向量**（维度变了，旧向量会被检索跳过）：
-
-```bash
-cd backend
-.venv/Scripts/python -m scripts.reindex_embeddings --dry-run        # 先看会做什么
-.venv/Scripts/python -m scripts.reindex_embeddings --rebuild-index  # 重建并刷新 HNSW 索引
-```
-
-重建脚本是幂等、分批、可续跑的：它会对比 `.embedding-signature` 指纹自动判断是否需要全量重算；
-Postgres 下会先把旧向量置 NULL 再 `ALTER COLUMN ... TYPE vector(N)`（顺序不能反）；
-失败的块记入 `eval/reindex_failed.json`，可用 `--only-failed` 续跑。
-
-配置是否生效可在三处确认：`GET /api/health` 的 `embedding_is_placeholder`、设置页的「向量检索」区块、
-调用审计里 `向量生成` 那一行的状态（`placeholder` → `success`）。
+- 当前账号模型为管理员账号，尚无客户与服务管理员的角色隔离。模型接入会影响整个工作台，面向独立客户账号开放前需要补充授权与数据隔离。
+- 真实简历、数据库、上传目录、日志和 `.env` 不应提交到 Git；仓库忽略规则已覆盖常用路径。密钥当前保存在服务端文件中，尚未接入专用密钥管理服务。
+- 启用远程对话或检索服务时，相应的简历文本会发送给所配置的服务商，应事先取得授权并确认数据保留政策。
+- `MASK_PII=true` 默认对证据引用和发送给模型的文本中的手机号、邮箱、身份证打码；原始文档与库内数据保持不变。候选人详情中的联系方式尚未统一脱敏。
+- 收藏 ID 和偏好保存在当前浏览器，尚无跨设备同步。业务数据并非多租户隔离。
+- 删除候选人会级联删除画像、经历、文本块、向量、匹配记录和对应本地原文件。
+- 扫描 PDF、图片简历、旧版 `.doc` 与 OCR 暂不支持。
+- 当前部署模板适合本机或内网试用；公网交付仍需配置 HTTPS、会话 Cookie 安全策略、访问控制与备份。
 
 ## 项目结构
 
 ```text
 backend/
-  app/              API、模型、检索、解析与数据模型
-  alembic/          数据库迁移
-  scripts/          演示数据与评测脚本
-  tests/            单元与 API 测试
+  app/                 API、鉴权、解析、模型服务与检索
+  alembic/             数据库迁移
+  scripts/             初始化、演示语料、索引重建与评测
+  eval/                黄金集与历史评测结果
+  tests/               单元与 API 测试
 frontend/
-  src/pages/        招聘工作台页面
-docs/               演示 JD
-docker-compose.yml  本地/内网交付编排
+  src/pages/           搜索、概览、岗位、人才库、收藏、档案与设置
+  src/components/      页面状态保留、模型接入与交互组件
+  src/design.css       统一视觉样式
+  DESIGN.md            设计说明与 Aceternity 组件来源
+docs/
+  images/              界面截图
+  demo-jd.md           演示招聘需求
+docker-compose.yml     PostgreSQL、API 与前端编排
 ```
 
-## 后续路线
+## 后续方向
 
-- ✅ **混合召回**（向量 + 关键词 RRF 融合）—— 已完成，附评测对比。
-- ✅ **检索评测体系**（Recall@K / MRR / NDCG@K + 结果落盘）—— 已完成。
-- ✅ **pgvector HNSW 索引**（迁移 `0002_hnsw_index`）—— 代码与迁移已就绪。
-- ✅ **embedding 独立可插拔 + 占位状态可见**—— 已完成；无凭证时不再伪装成 success。
-- ✅ **真实向量服务接入** —— 已接入 `zhipu:embedding-3`（1024 维），评测数字已更新为真实向量下的结果。
-- ✅ **招聘领域同义词扩展** —— 已上线并附 A/B，让关键词路从"几乎不贡献"变为 Recall@5 +0.10。
-- ✅ **PII 输出脱敏** —— 证据引用与送大模型的文本中，手机号 / 邮箱 / 身份证默认打码。
-- ✅ **空结果引导** —— 检索为空时点名是哪一项硬性条件筛掉了所有人，并给出放宽建议。
-- ✅ **启动配置自检** —— 默认密钥 / 云端模式缺 Key / 占位向量，启动时直接告警。
-- ⏳ **候选人详情页脱敏** —— 详情页的联系方式仍直接展示入库原文，接入真实简历前需补齐。
-- ✅ **可选大模型重排**（`RERANK_MODE=rule|llm`，批量打分、失败降级、模式可追溯）—— 已完成，并附 A/B；
-  实测未超过规则打分，故默认关闭。见「重排 A/B」一节。
-- ⏳ **本地 cross-encoder 重排** —— A/B 显示该场景「重排」确实是短板，但大模型裁判不是解法
-  （杠杆只有 20% 且输入被占位向量污染）。接入真实 embedding、把召回做干净之后再重新评估。
-- ⏳ OCR 与图片简历、Excel 批量字段映射。
-- ⏳ 单份/多份简历的自由问答与对话引用。
-- ⏳ 招聘顾问多人权限与岗位协作、企业 SSO 与数据保留策略。
-- ⏳ 数据库访问改为 AsyncSession（当前是同步 `create_engine` + `sessionmaker`；异步的是后台任务层）。
+- 客户与服务管理员角色、多人协作和数据隔离。
+- 候选人详情统一脱敏、数据保留与导出策略。
+- 模型配置档案、容器环境配置持久化与可视化索引任务。
+- 真实语义服务回归评测及本地 cross-encoder 重排实验。
+- OCR、图片简历与更多导入格式。
+- 前端包体积优化、异步数据库访问。
